@@ -5,15 +5,15 @@ export default function MatchesPage({ loggedInUserId, onBack }) {
   const [loading, setLoading] = useState(true);
 
   // Fetch matches from backend API
+
   useEffect(() => {
     async function fetchMatches() {
       try {
-        // Replace with your real backend endpoint
         const res = await fetch(`/api/matches?userId=${loggedInUserId}`);
         const data = await res.json();
         setMatches(data);
       } catch (err) {
-        console.error("Error fetching matches:", err);
+        setMatches([]);
       } finally {
         setLoading(false);
       }

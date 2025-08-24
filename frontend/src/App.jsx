@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import TinderLikePage from "./TinderLikePage";
+import TravelGroupsPage from "./TravelGroupsPage";
 import MatchesPage from "./MatchesPage";
 import BookFlightsPage from "./BookFlightsPage";
 import ShowBookingsPage from "./ShowBookingsPage";
@@ -25,6 +26,14 @@ export default function App() {
   ];
 
   // ---- Page Switches ----
+  if (page === "travelGroups") {
+    return (
+      <TravelGroupsPage
+        selectedLocation={selectedLocation}
+        onBack={() => setPage("menu")}
+      />
+    );
+  }
   if (page === "tinder") {
     return (
       <TinderLikePage
@@ -48,6 +57,7 @@ export default function App() {
     return (
       <BookFlightsPage
         currentUserId={loggedInUserId}
+        destination={selectedLocation}
         onBack={() => setPage("menu")}
       />
     );
@@ -124,7 +134,10 @@ export default function App() {
             Solo Travellers
           </button>
 
-          <button className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
+          <button
+            onClick={() => setPage("travelGroups")}
+            className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
+          >
             Travel Groups
           </button>
 
@@ -148,6 +161,8 @@ export default function App() {
           >
             Show Flight Bookings
           </button>
+
+          {/* Removed Cancel Flight Bookings button from main menu */}
 
           <button
             onClick={() => setPage("bookHotels")}

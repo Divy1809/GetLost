@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 
-export default function TinderLikePage({ location, loggedInUserId }) {
+export default function TinderLikePage({ location, loggedInUserId, onBack }) {
   const [profiles, setProfiles] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Fetch profiles from backend (replace with real API)
+
+  // Fetch profiles from backend
   useEffect(() => {
     async function fetchProfiles() {
       try {
-        // Example API (you’d replace with your backend endpoint)
-        const res = await fetch(
-          `/api/profiles?destination=${encodeURIComponent(location)}&exclude=${loggedInUserId}`
-        );
+        const res = await fetch(`/api/profiles?destination=${encodeURIComponent(location)}&exclude=${loggedInUserId}`);
         const data = await res.json();
         setProfiles(data);
       } catch (err) {
-        console.error("Error fetching profiles", err);
+        setProfiles([]);
       }
     }
     fetchProfiles();
@@ -23,11 +21,11 @@ export default function TinderLikePage({ location, loggedInUserId }) {
 
   const currentProfile = profiles[currentIndex];
 
+
   const handleLikeDislike = async (liked) => {
     if (!currentProfile) return;
 
     try {
-      // Save like/dislike (replace with API)
       await fetch("/api/likes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -75,20 +73,28 @@ export default function TinderLikePage({ location, loggedInUserId }) {
 
         {/* Buttons */}
         {currentProfile && (
-          <div className="grid grid-cols-2 gap-4">
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <button
+                onClick={() => handleLikeDislike(true)}
+                className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+              >
+                ❤️ Like
+              </button>
+              <button
+                onClick={() => handleLikeDislike(false)}
+                className="bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
+              >
+                👎 Dislike
+              </button>
+            </div>
             <button
-              onClick={() => handleLikeDislike(true)}
-              className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={onBack}
             >
-              ❤️ Like
+              Back
             </button>
-            <button
-              onClick={() => handleLikeDislike(false)}
-              className="bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
-            >
-              👎 Dislike
-            </button>
-          </div>
+          </>
         )}
       </div>
     </div>

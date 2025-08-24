@@ -7,17 +7,30 @@ export default function ShowFlightsBookingsPage({ currentUserId, onBack }) {
     loadBookings();
   }, [currentUserId]);
 
-  const loadBookings = () => {
-    const storedBookings = JSON.parse(localStorage.getItem("flightBookings")) || [];
-    const userBookings = storedBookings.filter(b => b.userId === currentUserId);
-    setBookings(userBookings);
+
+  const loadBookings = async () => {
+    try {
+      const res = await fetch(`/api/bookings?userId=${currentUserId}`);
+      const data = await res.json();
+      setBookings(data);
+    } catch (err) {
+      setBookings([]);
+    }
   };
 
-  const handleCancelBooking = (bookingId) => {
-    const storedBookings = JSON.parse(localStorage.getItem("flightBookings")) || [];
-    const updatedBookings = storedBookings.filter(b => b.booking_id !== bookingId);
-    localStorage.setItem("flightBookings", JSON.stringify(updatedBookings));
-    loadBookings(); // refresh UI
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        loadBookings(); // refresh UI
+      } else {
+        alert("Failed to cancel booking.");
+      }
+    } catch (err) {
+      alert("Error cancelling booking.");
+    }
   };
 
   return (

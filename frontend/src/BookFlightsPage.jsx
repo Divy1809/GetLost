@@ -23,24 +23,31 @@ const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
     generateFlights();
   }, [destination]);
 
-  const handleBookFlight = (flight) => {
-    if (!flight) return; // safety check
+
+  const handleBookFlight = async (flight) => {
+    if (!flight) return;
 
     const newBooking = {
-      booking_id: Date.now(), // unique ID
-      destination: flight.destination,
-      flight_details: `Flight: ${flight.flight_no} | Time: ${flight.time} | Fare: ₹${flight.fare}`,
-      booking_date: new Date().toISOString().split("T")[0],
       userId: currentUserId,
+      destination: destination,
+      flight_details: `Flight: ${flight.flight_no} | Time: ${flight.time} | Fare: ₹${flight.fare}`,
+      booking_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
     };
 
-    // Save to localStorage
-    const existingBookings =
-      JSON.parse(localStorage.getItem("flightBookings")) || [];
-    existingBookings.push(newBooking);
-    localStorage.setItem("flightBookings", JSON.stringify(existingBookings));
-
-    alert("✅ Flight booked successfully!");
+    try {
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBooking),
+      });
+      if (res.ok) {
+        alert('✅ Flight booked successfully!');
+      } else {
+        alert('❌ Booking failed.');
+      }
+    } catch (err) {
+      alert('❌ Booking failed.');
+    }
   };
 
   return (

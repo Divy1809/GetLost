@@ -16,23 +16,31 @@ export default function BookHotelPage({ currentUserId, selectedDestination, onBa
     setSelectedHotel(generatedHotels[0]);
   }, [selectedDestination]);
 
-  const handleBooking = () => {
+
+  const handleBooking = async () => {
     if (!selectedHotel) return;
 
     const newBooking = {
-      booking_id: Date.now(),
       userId: currentUserId,
       destination: selectedDestination,
       hotel_name: selectedHotel,
-      booking_date: new Date().toISOString().split("T")[0],
+  booking_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
     };
 
-    const existingBookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
-    existingBookings.push(newBooking);
-
-    localStorage.setItem("hotelBookings", JSON.stringify(existingBookings));
-
-    alert("✅ Hotel booked successfully!");
+    try {
+      const res = await fetch('/api/hotelBookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBooking),
+      });
+      if (res.ok) {
+        alert('✅ Hotel booked successfully!');
+      } else {
+        alert('❌ Booking failed.');
+      }
+    } catch (err) {
+      alert('❌ Booking failed.');
+    }
   };
 
   return (

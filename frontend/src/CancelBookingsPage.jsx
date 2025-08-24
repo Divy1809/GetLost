@@ -22,14 +22,19 @@ export default function CancelBookingsPage({ currentUserId, onBack }) {
   }, [currentUserId]);
 
   async function cancelBooking(bookingId) {
+    console.log('Cancel button clicked for booking_id:', bookingId);
     try {
-      await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
+      await fetch(`/api/bookings/${bookingId}`, {
         method: "DELETE",
       });
-      setBookings(bookings.filter((b) => b.id !== bookingId));
+      // Reload bookings from backend
+      const response = await fetch(`/api/bookings?userId=${currentUserId}`);
+      const data = await response.json();
+      setBookings(data);
       alert("Booking cancelled successfully!");
     } catch (error) {
       console.error("Error cancelling booking:", error);
+      alert("Failed to cancel booking.");
     }
   }
 
@@ -40,6 +45,12 @@ export default function CancelBookingsPage({ currentUserId, onBack }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg">
+        <button
+          onClick={() => console.log('Test button clicked!')}
+          className="mb-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Test Button
+        </button>
         <h1 className="text-2xl font-bold text-center mb-6">Cancel Bookings</h1>
 
         {bookings.length === 0 ? (
@@ -48,7 +59,7 @@ export default function CancelBookingsPage({ currentUserId, onBack }) {
           <div className="space-y-4 max-h-80 overflow-y-auto">
             {bookings.map((booking) => (
               <div
-                key={booking.id}
+                key={booking.booking_id}
                 className="p-4 border rounded-lg shadow-sm bg-gray-50 flex justify-between items-center"
               >
                 <div>
@@ -58,7 +69,7 @@ export default function CancelBookingsPage({ currentUserId, onBack }) {
                   <p>{booking.flight_details}</p>
                 </div>
                 <button
-                  onClick={() => cancelBooking(booking.id)}
+                  onClick={() => cancelBooking(booking.booking_id)}
                   className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
                 >
                   Cancel

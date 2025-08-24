@@ -7,17 +7,27 @@ export default function ShowHotelBookingsPage({ currentUserId, onBack }) {
     loadBookings();
   }, [currentUserId]);
 
-  const loadBookings = () => {
-    const storedBookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
-    const userBookings = storedBookings.filter(b => b.userId === currentUserId);
-    setBookings(userBookings);
+
+  const loadBookings = async () => {
+    try {
+      const res = await fetch(`/api/hotelBookings?userId=${currentUserId}`);
+      const data = await res.json();
+      setBookings(data);
+    } catch (err) {
+      setBookings([]);
+    }
   };
 
-  const handleCancelBooking = (bookingId) => {
-    const storedBookings = JSON.parse(localStorage.getItem("hotelBookings")) || [];
-    const updatedBookings = storedBookings.filter(b => b.booking_id !== bookingId);
-    localStorage.setItem("hotelBookings", JSON.stringify(updatedBookings));
-    loadBookings(); // refresh UI
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      await fetch(`/api/hotelBookings/${bookingId}`, {
+        method: 'DELETE',
+      });
+      loadBookings(); // refresh UI
+      alert('Hotel booking cancelled successfully!');
+    } catch (err) {
+      alert('Failed to cancel booking.');
+    }
   };
 
   return (
