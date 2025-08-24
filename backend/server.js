@@ -53,6 +53,10 @@ app.use('/api/bookings', bookingsRoutes);
 const hotelBookingsRoutes = require('./routes/hotelBookings');
 app.use('/api/hotelBookings', hotelBookingsRoutes);
 
+
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes);
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

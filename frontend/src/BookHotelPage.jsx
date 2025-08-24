@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function BookHotelPage({ currentUserId, selectedDestination, onBack }) {
+import { useLocation } from "react-router-dom";
+import { useUser } from "./UserContext";
+
+export default function BookHotelPage() {
+  const locationObj = useLocation();
+  const { selectedDestination } = locationObj.state || {};
+  const { userId: currentUserId } = useUser();
+  const navigate = useNavigate();
   const [hotels, setHotels] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState("");
 
@@ -63,14 +71,14 @@ export default function BookHotelPage({ currentUserId, selectedDestination, onBa
 
         <button
           onClick={handleBooking}
-          className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 mb-2"
+          className="w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 mb-4"
         >
           Book Hotel
         </button>
-
         <button
-          onClick={onBack}
-          className="w-full bg-gray-300 text-black py-2 rounded-lg hover:bg-gray-400"
+          onClick={() => navigate(-1)}
+          className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
+          style={{ marginBottom: "0" }}
         >
           Back
         </button>

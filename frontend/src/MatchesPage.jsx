@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function MatchesPage({ loggedInUserId, onBack }) {
+export default function MatchesPage() {
+  const locationObj = useLocation();
+  const loggedInUserId = locationObj.state?.loggedInUserId;
+  const navigate = useNavigate();
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Fetch matches from backend API
 
   useEffect(() => {
     async function fetchMatches() {
@@ -58,7 +60,7 @@ export default function MatchesPage({ loggedInUserId, onBack }) {
 
         {/* Back Button */}
         <button
-          onClick={onBack}
+          onClick={() => navigate(-1)}
           className="mt-6 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
         >
           ⬅ Back to Menu

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
-export default function ShowFlightsBookingsPage({ currentUserId, onBack }) {
+export default function ShowFlightsBookingsPage() {
+  const navigate = useNavigate();
+  const { userId: currentUserId } = useUser();
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     loadBookings();
   }, [currentUserId]);
-
 
   const loadBookings = async () => {
     try {
@@ -64,7 +67,7 @@ export default function ShowFlightsBookingsPage({ currentUserId, onBack }) {
 
         <div className="flex justify-center mt-6">
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
           >
             Back

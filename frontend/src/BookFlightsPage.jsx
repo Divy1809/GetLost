@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
+import { useLocation } from "react-router-dom";
+import { useUser } from "./UserContext";
+
+const BookFlightsPage = () => {
+  const locationObj = useLocation();
+  const { destination } = locationObj.state || {};
+  const { userId: currentUserId } = useUser();
+  const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
   const [selectedAirline, setSelectedAirline] = useState("");
 
@@ -113,7 +121,7 @@ const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
 
         <div className="mt-6 text-center">
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
           >
             Back

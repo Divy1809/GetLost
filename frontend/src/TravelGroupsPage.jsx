@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function TravelGroupsPage({ selectedLocation, onBack }) {
+  const navigate = useNavigate();
   const [showPrivate, setShowPrivate] = useState(false);
   const [privateCode, setPrivateCode] = useState("");
   const [showQR, setShowQR] = useState(false);
@@ -80,10 +82,10 @@ export default function TravelGroupsPage({ selectedLocation, onBack }) {
 
         <div className="flex justify-center mt-10">
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all shadow"
           >
-            ← Back
+             Back
           </button>
         </div>
       </div>

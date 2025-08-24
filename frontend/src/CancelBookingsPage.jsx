@@ -1,87 +1,64 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function CancelBookingsPage({ currentUserId, onBack }) {
-  const [bookings, setBookings] = useState([]);
+export default function MatchesPage({ loggedInUserId }) {
+  const navigate = useNavigate();
+  const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchBookings() {
+    async function fetchMatches() {
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/bookings?userId=${currentUserId}`
-        );
-        const data = await response.json();
-        setBookings(data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
+        const res = await fetch(`/api/matches?userId=${loggedInUserId}`);
+        const data = await res.json();
+        setMatches(data);
+      } catch (err) {
+        setMatches([]);
       } finally {
         setLoading(false);
       }
     }
-    fetchBookings();
-  }, [currentUserId]);
-
-  async function cancelBooking(bookingId) {
-    console.log('Cancel button clicked for booking_id:', bookingId);
-    try {
-      await fetch(`/api/bookings/${bookingId}`, {
-        method: "DELETE",
-      });
-      // Reload bookings from backend
-      const response = await fetch(`/api/bookings?userId=${currentUserId}`);
-      const data = await response.json();
-      setBookings(data);
-      alert("Booking cancelled successfully!");
-    } catch (error) {
-      console.error("Error cancelling booking:", error);
-      alert("Failed to cancel booking.");
-    }
-  }
-
-  if (loading) {
-    return <p className="text-center mt-6">Loading your bookings...</p>;
-  }
+    fetchMatches();
+  }, [loggedInUserId]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg">
-        <button
-          onClick={() => console.log('Test button clicked!')}
-          className="mb-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-        >
-          Test Button
-        </button>
-        <h1 className="text-2xl font-bold text-center mb-6">Cancel Bookings</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md">
+        <h1 className="text-2xl font-bold text-center mb-4 text-blue-600">
+          Your Matches
+        </h1>
 
-        {bookings.length === 0 ? (
-          <p className="text-gray-600 text-center">No bookings available.</p>
+        {loading ? (
+          <p className="text-center text-gray-500">Loading...</p>
+        ) : matches.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No matches yet. Like profiles to find matches!
+          </p>
         ) : (
-          <div className="space-y-4 max-h-80 overflow-y-auto">
-            {bookings.map((booking) => (
+          <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+            {matches.map((match, index) => (
               <div
-                key={booking.booking_id}
-                className="p-4 border rounded-lg shadow-sm bg-gray-50 flex justify-between items-center"
+                key={index}
+                className="p-4 border rounded-lg bg-gray-50 shadow-sm"
               >
-                <div>
-                  <p>
-                    <strong>{booking.destination}</strong>
-                  </p>
-                  <p>{booking.flight_details}</p>
-                </div>
-                <button
-                  onClick={() => cancelBooking(booking.booking_id)}
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
-                >
-                  Cancel
-                </button>
+                <h2 className="font-bold text-lg">
+                  {match.name}, {match.age}
+                </h2>
+                <p className="text-gray-600">
+                  {match.originCity} ➔ {match.destinationCity}
+                </p>
+                <p className="mt-2 text-sm text-gray-700">
+                  📞 {match.phone} <br />
+                  📧 {match.email}
+                </p>
               </div>
             ))}
           </div>
         )}
 
-        <div className="mt-6 flex justify-center">
+        <div className="flex justify-center mt-6">
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
           >
             Back
