@@ -2,15 +2,25 @@ import React, { useState, useEffect } from "react";
 
 const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
   const [flights, setFlights] = useState([]);
+  const [selectedAirline, setSelectedAirline] = useState("");
 
+  const airlines = [
+    "IndiGo",
+    "Air India",
+    "SpiceJet",
+    "Emirates",
+    "Singapore Airlines",
+    "Qatar Airways",
+  ];
   // Generate random flights
   const generateFlights = () => {
     const newFlights = [];
     for (let i = 0; i < 5; i++) {
       newFlights.push({
         flight_no: "FL" + Math.floor(1000 + Math.random() * 9000),
+        airline: selectedAirline,
         destination: destination,
-        time: `${Math.floor(Math.random() * 12) + 1}:${
+        time: `${Math.floor(Math.random() * 12) + 1}:$${
           Math.random() < 0.5 ? "00" : "30"
         } ${Math.random() < 0.5 ? "AM" : "PM"}`,
         fare: 5000 + Math.floor(Math.random() * 4000),
@@ -20,8 +30,12 @@ const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
   };
 
   useEffect(() => {
-    generateFlights();
-  }, [destination]);
+    if (selectedAirline) {
+      generateFlights();
+    } else {
+      setFlights([]);
+    }
+  }, [destination, selectedAirline]);
 
 
   const handleBookFlight = async (flight) => {
@@ -54,27 +68,48 @@ const BookFlightsPage = ({ currentUserId, destination, onBack }) => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-lg">
         <h1 className="text-2xl font-bold text-center mb-6">
-          Available Flights to {destination}
+          Book a Flight to {destination}
         </h1>
 
-        <div className="space-y-4">
-          {flights.map((flight, index) => (
-            <div
-              key={index}
-              className="p-4 border rounded-lg shadow-sm bg-gray-50"
-            >
-              <p><strong>Flight:</strong> {flight.flight_no}</p>
-              <p><strong>Time:</strong> {flight.time}</p>
-              <p><strong>Fare:</strong> ₹{flight.fare}</p>
-              <button
-                onClick={() => handleBookFlight(flight)} // ✅ Pass correct flight
-                className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-              >
-                Book This Flight
-              </button>
-            </div>
+        <label className="block text-lg font-medium mb-2 text-center">Select Airline:</label>
+        <select
+          value={selectedAirline}
+          onChange={e => setSelectedAirline(e.target.value)}
+          className="w-full p-2 border rounded-lg mb-6"
+        >
+          <option value="">-- Select Airline --</option>
+          {airlines.map(airline => (
+            <option key={airline} value={airline}>{airline}</option>
           ))}
-        </div>
+        </select>
+
+        {selectedAirline === "" ? (
+          <p className="text-center text-gray-500">Please select an airline to view available flights.</p>
+        ) : (
+          <div className="space-y-4">
+            {flights.length === 0 ? (
+              <p className="text-center text-gray-500">No flights available.</p>
+            ) : (
+              flights.map((flight, index) => (
+                <div
+                  key={index}
+                  className="p-4 border rounded-lg shadow-sm bg-gray-50"
+                >
+                  <p><strong>Airline:</strong> {flight.airline}</p>
+                  <p><strong>Flight:</strong> {flight.flight_no}</p>
+                  <p><strong>Time:</strong> {flight.time}</p>
+                  <p><strong>Fare:</strong> ₹{flight.fare}</p>
+                  <button
+                    onClick={() => handleBookFlight(flight)}
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                  >
+                    Book This Flight
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        )}
 
         <div className="mt-6 text-center">
           <button
