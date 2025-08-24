@@ -24,69 +24,82 @@ export default function TravelGroupsPage({ selectedLocation, onBack }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 p-6">
-      <div className="bg-white shadow-2xl rounded-3xl p-10 w-full max-w-xl border border-gray-200">
-        <h1 className="text-3xl font-extrabold text-center mb-8 text-purple-700 tracking-wide drop-shadow">Travel Groups</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <button
-            onClick={handleCreateGroup}
-            className="flex flex-col items-center justify-center bg-green-500 text-white py-6 rounded-2xl shadow-lg hover:bg-green-600 transition-all"
-          >
-            <span className="text-4xl mb-2">💬</span>
-            <span className="font-semibold text-lg">Create Group</span>
-          </button>
-          <button
-            onClick={() => setShowPrivate(true)}
-            className="flex flex-col items-center justify-center bg-blue-500 text-white py-6 rounded-2xl shadow-lg hover:bg-blue-600 transition-all"
-          >
-            <span className="text-4xl mb-2">🔒</span>
-            <span className="font-semibold text-lg">Join Private Group</span>
-          </button>
-          <button
-            onClick={handleJoinGroup}
-            className="flex flex-col items-center justify-center bg-purple-500 text-white py-6 rounded-2xl shadow-lg hover:bg-purple-600 transition-all"
-          >
-            <span className="text-4xl mb-2">🌐</span>
-            <span className="font-semibold text-lg">Join Group</span>
-          </button>
-        </div>
-
-        {showPrivate && (
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6 shadow">
-            <label className="block mb-3 font-bold text-blue-700 text-lg">Enter Private Group Code:</label>
-            <input
-              type="text"
-              value={privateCode}
-              onChange={e => setPrivateCode(e.target.value)}
-              className="w-full p-3 border-2 border-blue-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 text-lg"
-              placeholder="Enter code..."
-            />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-8 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-20 left-20 w-32 h-32 bg-slate-700/20 rounded-full blur-xl"></div>
+      <div className="absolute bottom-20 right-20 w-40 h-40 bg-slate-600/10 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-gray-700/10 rounded-full blur-lg"></div>
+      
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">Travel Groups</h1>
+        <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <button
-              onClick={handleJoinPrivate}
-              className="bg-blue-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-600 transition-all"
+              onClick={handleCreateGroup}
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
             >
-              Join
+              <span className="text-4xl mb-4">💬</span>
+              <span className="font-bold text-lg">Create Group</span>
+            </button>
+            <button
+              onClick={() => setShowPrivate(true)}
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+            >
+              <span className="text-4xl mb-4">🔒</span>
+              <span className="font-bold text-lg">Join Private Group</span>
+            </button>
+            <button
+              onClick={handleJoinGroup}
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+            >
+              <span className="text-4xl mb-4">🌐</span>
+              <span className="font-bold text-lg">Join Group</span>
             </button>
           </div>
-        )}
 
-        {showQR && (
-          <div className="mt-8 text-center bg-purple-50 border border-purple-200 rounded-xl p-6 shadow">
-            <p className="mb-4 text-lg font-semibold text-purple-700">Scan this QR code to join the <span className="font-bold">{selectedLocation}</span> group:</p>
-            {/* QR code image will be added here when provided */}
-            <div className="w-48 h-48 bg-gray-200 flex items-center justify-center rounded-xl border-2 border-dashed border-purple-400 mx-auto">
-              <span className="text-gray-500 text-lg">QR code for {selectedLocation}</span>
+          {showPrivate && (
+            <div className="mt-8 bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-8 shadow-2xl w-full max-w-lg">
+              <label className="block mb-4 font-bold text-white text-lg">Enter Private Group Code:</label>
+              <input
+                type="text"
+                value={privateCode}
+                onChange={e => setPrivateCode(e.target.value)}
+                className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-xl mb-6 text-white placeholder-slate-400 focus:outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 backdrop-blur-sm"
+                placeholder="Enter code..."
+              />
+              <button
+                onClick={handleJoinPrivate}
+                className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-6 rounded-xl font-bold shadow-lg border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              >
+                Join Private Group
+              </button>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="flex justify-center mt-10">
-          <button
-            onClick={() => navigate(-1)}
-            className="bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all shadow"
-          >
-             Back
-          </button>
+          {showQR && (
+            <div className="mt-8 text-center bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-8 shadow-2xl w-full max-w-lg">
+              <p className="mb-6 text-lg font-semibold text-white">Scan this QR code to join the <span className="font-bold text-slate-300">{selectedLocation}</span> group:</p>
+              <div className="w-48 h-48 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-500 mx-auto bg-slate-700/30">
+                {selectedLocation && (
+                  <img
+                    src={`/qr/${selectedLocation.toLowerCase()}.jpg`}
+                    alt={`QR code for ${selectedLocation}`}
+                    className="w-full h-full object-contain rounded-xl"
+                    onError={e => { e.target.onerror = null; e.target.src = '/qr/delhi.jpg'; }}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+            >
+              Back to Menu
+            </button>
+          </div>
         </div>
       </div>
     </div>

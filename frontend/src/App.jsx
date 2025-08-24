@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import MainMenu from "./mainmenu";
 import TinderLikePage from "./TinderLikePage";
 import TravelGroupsPage from "./TravelGroupsPage";
@@ -22,7 +22,7 @@ function App() {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/tinder" element={<TinderLikePage />} />
-          <Route path="/travel-groups" element={<TravelGroupsPage />} />
+          <Route path="/travel-groups" element={<TravelGroupsPageWrapper />} />
           <Route path="/matches" element={<MatchesPage />} />
           <Route path="/book-flights" element={<BookFlightsPage />} />
           <Route path="/show-bookings" element={<ShowBookingsPage />} />
@@ -33,6 +33,13 @@ function App() {
       </Router>
     </UserProvider>
   );
+}
+
+// Wrapper to pass selectedLocation from route state
+function TravelGroupsPageWrapper() {
+  const location = useLocation();
+  const selectedLocation = location.state?.selectedLocation || "Delhi";
+  return <TravelGroupsPage selectedLocation={selectedLocation} />;
 }
 
 export default App;

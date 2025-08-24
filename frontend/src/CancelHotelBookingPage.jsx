@@ -1,170 +1,91 @@
-import React, { useState } from "react";
-import TinderLikePage from "./TinderLikePage";
-import MatchesPage from "./MatchesPage";
-import BookFlightsPage from "./BookFlightsPage";
-import ShowBookingsPage from "./ShowBookingsPage";
-import CancelBookingsPage from "./CancelBookingsPage";
-import BookHotelPage from "./BookHotelPage";
-import CancelHotelBookingPage from "./CancelHotelBookingPage";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "./UserContext";
 
-export default function App() {
-  const [page, setPage] = useState("menu");
-  const [selectedLocation, setSelectedLocation] = useState("Delhi");
-  const loggedInUserId = 1; // Example user
+export default function CancelHotelBookingPage() {
+  const navigate = useNavigate();
+  const { userId: currentUserId } = useUser();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const locations = [
-    "Delhi",
-    "Mumbai",
-    "Bangalore",
-    "Chennai",
-    "Hyderabad",
-    "Kolkata",
-    "Pune",
-    "Jaipur",
-    "Ahmedabad",
-  ];
+  useEffect(() => {
+    loadBookings();
+  }, [currentUserId]);
 
-  // ---- Page Switches ----
-  if (page === "tinder") {
-    return (
-      <TinderLikePage
-        location={selectedLocation}
-        loggedInUserId={loggedInUserId}
-        onBack={() => setPage("menu")}
-      />
-    );
-  }
+  const loadBookings = async () => {
+    try {
+      const res = await fetch(`/api/hotelBookings?userId=${currentUserId}`);
+      const data = await res.json();
+      setBookings(data);
+    } catch (err) {
+      setBookings([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (page === "matches") {
-    return (
-      <MatchesPage
-        loggedInUserId={loggedInUserId}
-        onBack={() => setPage("menu")}
-      />
-    );
-  }
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      await fetch(`/api/hotelBookings/${bookingId}`, {
+        method: 'DELETE',
+      });
+      loadBookings(); // refresh UI
+      alert('Hotel booking cancelled successfully!');
+    } catch (err) {
+      alert('Failed to cancel booking.');
+    }
+  };
 
-  if (page === "bookFlights") {
-    return (
-      <BookFlightsPage
-        currentUserId={loggedInUserId}
-        onBack={() => setPage("menu")}
-      />
-    );
-  }
-
-  if (page === "showBookings") {
-    return (
-      <ShowBookingsPage
-        currentUserId={loggedInUserId}
-        onBack={() => setPage("menu")}
-        onCancelBookings={() => setPage("cancelBookings")}
-      />
-    );
-  }
-
-  if (page === "cancelBookings") {
-    return (
-      <CancelBookingsPage
-        currentUserId={loggedInUserId}
-        onBack={() => setPage("showBookings")}
-      />
-    );
-  }
-
-  if (page === "bookHotels") {
-    return (
-      <BookHotelPage
-        currentUserId={loggedInUserId}
-        selectedDestination={selectedLocation}
-        onBack={() => setPage("menu")}
-      />
-    );
-  }
-
-  if (page === "cancelHotelBookings") {
-    return (
-      <CancelHotelBookingPage
-        currentUserId={loggedInUserId}
-        onBack={() => setPage("menu")}
-      />
-    );
-  }
-
-  // ---- Main Menu ----
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-lg">
-        {/* Title */}
-        <h1 className="text-3xl font-bold text-center mb-6">Main Menu</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-8 relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute top-20 left-20 w-32 h-32 bg-slate-700/20 rounded-full blur-xl"></div>
+      <div className="absolute bottom-20 right-20 w-40 h-40 bg-slate-600/10 rounded-full blur-2xl"></div>
+      <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-gray-700/10 rounded-full blur-lg"></div>
+      
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
+        <h1 className="text-4xl font-bold text-center mb-8 text-white">Cancel Hotel Bookings</h1>
+        <div className="w-full max-w-4xl mx-auto">
+          {loading ? (
+            <div className="text-center">
+              <p className="text-slate-300 text-lg">Loading your hotel bookings...</p>
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="text-center bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-8 shadow-2xl">
+              <p className="text-slate-300 text-lg">No hotel bookings to cancel</p>
+            </div>
+          ) : (
+            <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
+              {bookings.map((booking) => (
+                <div
+                  key={booking.booking_id}
+                  className="bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-xl p-6 shadow-2xl"
+                >
+                  <div className="text-white space-y-2 mb-4">
+                    <p><strong>Booking ID:</strong> <span className="text-slate-300">{booking.booking_id}</span></p>
+                    <p><strong>Destination:</strong> <span className="text-slate-300">{booking.destination}</span></p>
+                    <p><strong>Hotel:</strong> <span className="text-slate-300">{booking.hotel_name}</span></p>
+                    <p><strong>Booked On:</strong> <span className="text-slate-300">{booking.booking_date}</span></p>
+                  </div>
+                  <button
+                    onClick={() => handleCancelBooking(booking.booking_id)}
+                    className="bg-red-600/60 hover:bg-red-500/60 text-white px-6 py-3 rounded-xl font-bold shadow-lg border border-red-500/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+                  >
+                    Cancel This Booking
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-        {/* Destination Dropdown */}
-        <label className="block text-lg font-medium mb-2 text-center">
-          Select Destination:
-        </label>
-        <select
-          value={selectedLocation}
-          onChange={(e) => setSelectedLocation(e.target.value)}
-          className="w-full p-2 border rounded-lg mb-6"
-        >
-          {locations.map((location) => (
-            <option key={location} value={location}>
-              {location}
-            </option>
-          ))}
-        </select>
-
-        {/* Button Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={() => setPage("tinder")}
-            className="bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
-          >
-            Solo Travellers
-          </button>
-
-          <button className="bg-green-500 text-white py-2 rounded-lg hover:bg-green-600">
-            Travel Groups
-          </button>
-
-          <button
-            onClick={() => setPage("matches")}
-            className="bg-purple-500 text-white py-2 rounded-lg hover:bg-purple-600"
-          >
-            Matches
-          </button>
-
-          <button
-            onClick={() => setPage("bookFlights")}
-            className="bg-indigo-500 text-white py-2 rounded-lg hover:bg-indigo-600"
-          >
-            Book Flights
-          </button>
-
-          <button
-            onClick={() => setPage("showBookings")}
-            className="bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600"
-          >
-            Show Flight Bookings
-          </button>
-
-          <button
-            onClick={() => setPage("bookHotels")}
-            className="bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600"
-          >
-            Book Hotels
-          </button>
-
-          <button
-            onClick={() => setPage("cancelHotelBookings")}
-            className="bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600"
-          >
-            Show/Cancel Hotel Bookings
-          </button>
-
-          <button className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600">
-            Logout
-          </button>
+          <div className="flex justify-center mt-10">
+            <button
+              onClick={() => navigate(-1)}
+              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+            >
+              Back to Menu
+            </button>
+          </div>
         </div>
       </div>
     </div>
