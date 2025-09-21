@@ -254,4 +254,52 @@ router.get('/liked-by/:userId', (req, res) => {
   });
 });
 
+// Like/dislike a travel post
+router.post('/', (req, res) => {
+  const { userId, postId, action } = req.body;
+
+  if (!userId || !postId || !action) {
+    return res.status(400).json({ error: 'Missing required fields: userId, postId, action' });
+  }
+
+  if (action !== 'like' && action !== 'dislike') {
+    return res.status(400).json({ error: 'Action must be either "like" or "dislike"' });
+  }
+
+  // First, remove any existing entry for this user-post combination
+  const deleteQuery = 'DELETE FROM travel_post_likes WHERE user_id = ? AND post_id = ?';
+  
+  db.query(deleteQuery, [userId, postId], (err) => {
+    if (err) {
+      console.error('Error removing existing like:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // If action is 'like', insert new like record
+    if (action === 'like') {
+      const insertQuery = 'INSERT INTO travel_post_likes (user_id, post_id, liked) VALUES (?, ?, 1)';
+      
+      db.query(insertQuery, [userId, postId], (err, result) => {
+        if (err) {
+          console.error('Error inserting like:', err);
+          return res.status(500).json({ error: 'Failed to save like' });
+        }
+
+        res.json({ 
+          success: true, 
+          message: 'Post liked successfully',
+          action: 'like'
+        });
+      });
+    } else {
+      // For dislike, we just removed the entry above, so respond with success
+      res.json({ 
+        success: true, 
+        message: 'Post disliked successfully',
+        action: 'dislike'
+      });
+    }
+  });
+});
+
 module.exports = router;

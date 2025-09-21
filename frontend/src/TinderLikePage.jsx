@@ -57,54 +57,47 @@ export default function TinderLikePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-8 relative overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute top-20 left-20 w-32 h-32 bg-slate-700/20 rounded-full blur-xl"></div>
-      <div className="absolute bottom-20 right-20 w-40 h-40 bg-slate-600/10 rounded-full blur-2xl"></div>
-      <div className="absolute top-1/2 right-1/4 w-24 h-24 bg-gray-700/10 rounded-full blur-lg"></div>
-      
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-4xl font-bold text-center mb-8 text-white">Solo Travellers</h1>
-        <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center text-center">
-          {/* Profile info */}
-          {currentProfile ? (
-            <div className="bg-slate-800/20 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30 mb-8 w-full">
-              <h2 className="text-3xl font-bold text-white mb-4">
-                {currentProfile.name}, {currentProfile.age}
-              </h2>
-              <p className="text-slate-300 mb-6 text-lg">
-                {currentProfile.originCity} ➔ {currentProfile.destinationCity}
-              </p>
-              
-              {/* Buttons */}
-              <div className="grid grid-cols-2 gap-6 mb-6">
-                <button
-                  onClick={() => handleLikeDislike(true)}
-                  className="bg-green-700/60 hover:bg-green-600/60 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-2xl border border-green-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
-                >
-                  ❤️ Like
-                </button>
-                <button
-                  onClick={() => handleLikeDislike(false)}
-                  className="bg-red-700/60 hover:bg-red-600/60 text-white py-4 px-6 rounded-xl font-bold text-lg shadow-2xl border border-red-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
-                >
-                  👎 Dislike
-                </button>
-              </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-6">
+      <div className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md text-center">
+        {/* Profile info */}
+        {currentProfile ? (
+          <>
+            <h2 className="text-2xl font-bold text-blue-600 mb-2">   
+              {currentProfile.name}, {currentProfile.age}
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {currentProfile.originCity} ➔ {currentProfile.destinationCity}
+            </p>
+          </>
+        ) : (
+          <h2 className="text-lg text-gray-500">No more profiles available.</h2>
+        )}
+
+        {/* Buttons */}
+        {currentProfile && (
+          <>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <button
+                onClick={() => handleLikeDislike(true)}
+                className="bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+              >
+                ❤️ Like
+              </button>
+              <button
+                onClick={() => handleLikeDislike(false)}
+                className="bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600"
+              >
+                👎 Dislike
+              </button>
             </div>
-          ) : (
-            <div className="bg-slate-800/20 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30 mb-8 w-full">
-              <h2 className="text-xl text-slate-300 mb-6">No more profiles available.</h2>
-            </div>
-          )}
-          
-          <button
-            className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
-            onClick={() => navigate(-1)}
-          >
-            Back to Menu
-          </button>
-        </div>
+            <button
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onClick={() => navigate(-1)}
+            >
+              Back
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

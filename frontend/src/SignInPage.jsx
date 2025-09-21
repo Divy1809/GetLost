@@ -3,25 +3,62 @@ import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
 export default function SignInPage() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { setUserId } = useUser();
   const navigate = useNavigate();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    // Replace with real backend call
-    const res = await fetch("/api/signin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
-    if (res.ok) {
+    setErrorMessage("");
+
+    // Validate input
+    if (!phone && !email) {
+      setErrorMessage("Please enter either your phone number or email address");
+      return;
+    }
+
+    if (phone && (!phone.startsWith("+91") || phone.length !== 13)) {
+      setErrorMessage("Phone number must be in format +91XXXXXXXXXX");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone || undefined, email: email || undefined }),
+      });
+      
       const data = await res.json();
-      setUserId(data.userId); // Set real userId from backend
-      navigate("/");
-    } else {
-      alert("Sign in failed. Check credentials.");
+      
+      if (res.ok) {
+        setUserId(data.userId);
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+      } else {
+        setErrorMessage(data.error || "Sign in failed. Please check your credentials.");
+      }
+    } catch (error) {
+      setErrorMessage("Network error. Please check your connection.");
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+    
+    // Auto-add +91 if not present
+    if (!value.startsWith("+91") && value.length > 0) {
+      value = "+91" + value.replace(/^\+?91?/, "");
+    }
+    
+    // Limit to +91 + 10 digits
+    if (value.length <= 13) {
+      setPhone(value);
     }
   };
 
@@ -87,32 +124,59 @@ export default function SignInPage() {
         {/* Right Side - Sign In Form */}
         <div className="flex-1 flex items-center justify-center p-12">
           <div className="w-full max-w-md">
+            {/* Success Modal */}
+            {showSuccessModal && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-lg border-2 border-slate-600/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl">🎉</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3">Welcome Back!</h3>
+                    <p className="text-slate-300 text-lg mb-6">Redirecting to your dashboard...</p>
+                    <div className="w-full bg-slate-600/30 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSignIn}>
               <h2 className="text-4xl font-bold text-white mb-3 text-center">Sign In</h2>
-              <p className="text-slate-400 mb-10 text-center text-lg">Enter your credentials to continue</p>
+              <p className="text-slate-400 mb-10 text-center text-lg">Welcome back to your travel journey</p>
+              
+              {errorMessage && (
+                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg text-red-300 text-center">
+                  {errorMessage}
+                </div>
+              )}
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-3">Username</label>
+                  <label className="block text-slate-300 text-sm font-semibold mb-3">Phone Number</label>
                   <input
-                    type="text"
-                    placeholder="Enter your username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    type="tel"
+                    placeholder="+91XXXXXXXXXX"
+                    value={phone}
+                    onChange={handlePhoneChange}
                     className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-lg text-white placeholder-slate-400 backdrop-blur-sm"
-                    required
                   />
+                  <p className="text-xs text-slate-400 mt-1">Format: +91 followed by 10 digits</p>
+                </div>
+                
+                <div className="text-center">
+                  <span className="text-slate-400 text-sm">OR</span>
                 </div>
                 
                 <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-3">Password</label>
+                  <label className="block text-slate-300 text-sm font-semibold mb-3">Email Address</label>
                   <input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-lg text-white placeholder-slate-400 backdrop-blur-sm"
-                    required
                   />
                 </div>
               </div>

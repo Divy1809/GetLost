@@ -23,10 +23,12 @@
 
 
 const express = require("express");
+const cors = require('cors');
 const app = express();
 const PORT = 5000;
 const db = require('./config/db');
 
+app.use(cors());
 app.use(express.json()); // For parsing JSON bodies, needed for POST requests
 
 app.get("/", (req, res) => {
@@ -45,17 +47,18 @@ app.get('/test-db', (req, res) => {
 const profileRoutes = require('./routes/profiles');
 app.use('/api/profiles', profileRoutes);
 
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
 
 const bookingsRoutes = require('./routes/bookings');
 app.use('/api/bookings', bookingsRoutes);
 
+const travelPostsRoutes = require('./routes/travelPosts');
+app.use('/api/travel-posts', travelPostsRoutes);
+
 
 const hotelBookingsRoutes = require('./routes/hotelBookings');
 app.use('/api/hotelBookings', hotelBookingsRoutes);
-
-
-const authRoutes = require('./routes/auth');
-app.use('/api', authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

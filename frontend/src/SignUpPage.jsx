@@ -3,37 +3,65 @@ import { useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
   const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [age, setAge] = useState("");
-  const [originCity, setOriginCity] = useState("");
-  const [destinationCity, setDestinationCity] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    // Send signup data to backend
-    const res = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        age,
-        origin_city: originCity,
-        destination_city: destinationCity,
-        email,
-        phone: contact,
-        password,
-        username
-      })
-    });
-    if (res.ok) {
-      alert("Signup successful! Please sign in.");
-      navigate("/signin");
-    } else {
-      alert("Signup failed.");
+    setErrorMessage("");
+
+    // Client-side validation
+    if (!name.trim()) {
+      setErrorMessage("Name is required");
+      return;
+    }
+
+    if (!phone.startsWith("+91") || phone.length !== 13) {
+      setErrorMessage("Phone number must be +91 followed by 10 digits");
+      return;
+    }
+
+    if (!email.includes("@")) {
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), phone, email: email.trim() })
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setShowSuccessModal(true);
+        setTimeout(() => {
+          navigate("/signin");
+        }, 2000);
+      } else {
+        setErrorMessage(data.error || "Signup failed. Please try again.");
+      }
+    } catch (error) {
+      setErrorMessage("Network error. Please check your connection.");
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    let value = e.target.value;
+    
+    // Auto-add +91 if not present
+    if (!value.startsWith("+91") && value.length > 0) {
+      value = "+91" + value.replace(/^\+?91?/, "");
+    }
+    
+    // Limit to +91 + 10 digits
+    if (value.length <= 13) {
+      setPhone(value);
     }
   };
 
@@ -105,128 +133,94 @@ export default function SignUpPage() {
         {/* Right Side - Sign Up Form */}
         <div className="flex-1 flex items-center justify-center p-12">
           <div className="w-full max-w-lg">
-            <form onSubmit={handleSignUp}>
-              <h2 className="text-4xl font-bold text-white mb-3 text-center">Create Your Account</h2>
-              <p className="text-slate-400 mb-8 text-center text-lg">Start your travel journey today</p>
-              
-              <div className="space-y-5 max-h-96 overflow-y-auto pr-2">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-slate-300 text-sm font-semibold mb-2">Full Name</label>
-                    <input
-                      type="text"
-                      placeholder="Your name"
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-slate-300 text-sm font-semibold mb-2">Age</label>
-                    <input
-                      type="number"
-                      placeholder="Age"
-                      value={age}
-                      onChange={e => setAge(e.target.value)}
-                      className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                      required
-                    />
+            {/* Success Modal */}
+            {showSuccessModal && (
+              <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-lg border-2 border-slate-600/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl">✅</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-3">Registration Successful!</h3>
+                    <p className="text-slate-300 text-lg mb-6">Welcome to GetLost! Redirecting to sign in...</p>
+                    <div className="w-full bg-slate-600/30 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
+                    </div>
                   </div>
                 </div>
+              </div>
+            )}
 
+            <form onSubmit={handleSignUp}>
+              <h2 className="text-4xl font-bold text-white mb-3 text-center">Create Your Account</h2>
+              <p className="text-slate-400 mb-8 text-center text-lg">Just 3 simple steps to get started</p>
+              
+              {errorMessage && (
+                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg text-red-300 text-center">
+                  {errorMessage}
+                </div>
+              )}
+              
+              <div className="space-y-6">
+                {/* Full Name */}
+                <div>
+                  <label className="block text-slate-300 text-sm font-semibold mb-2">Full Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm text-lg"
+                    required
+                  />
+                </div>
+
+                {/* Phone Number */}
+                <div>
+                  <label className="block text-slate-300 text-sm font-semibold mb-2">Phone Number</label>
+                  <input
+                    type="tel"
+                    placeholder="+91XXXXXXXXXX"
+                    value={phone}
+                    onChange={handlePhoneChange}
+                    className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm text-lg"
+                    required
+                  />
+                  <p className="text-xs text-slate-400 mt-1">Format: +91 followed by 10 digits</p>
+                </div>
+
+                {/* Email */}
                 <div>
                   <label className="block text-slate-300 text-sm font-semibold mb-2">Email Address</label>
                   <input
                     type="email"
-                    placeholder="your.email@example.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-2">Contact Number</label>
-                  <input
-                    type="text"
-                    placeholder="Phone number"
-                    value={contact}
-                    onChange={e => setContact(e.target.value)}
-                    className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-slate-300 text-sm font-semibold mb-2">Origin City</label>
-                    <input
-                      type="text"
-                      placeholder="From city"
-                      value={originCity}
-                      onChange={e => setOriginCity(e.target.value)}
-                      className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-slate-300 text-sm font-semibold mb-2">Destination</label>
-                    <input
-                      type="text"
-                      placeholder="To city"
-                      value={destinationCity}
-                      onChange={e => setDestinationCity(e.target.value)}
-                      className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-2">Username</label>
-                  <input
-                    type="text"
-                    placeholder="Choose username"
-                    value={username}
-                    onChange={e => setUsername(e.target.value)}
-                    className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-2">Password</label>
-                  <input
-                    type="password"
-                    placeholder="Create password"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    className="w-full p-3 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm"
+                    className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-lg focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-white placeholder-slate-400 backdrop-blur-sm text-lg"
                     required
                   />
                 </div>
               </div>
-
-              <button 
-                type="submit" 
-                className="w-full mt-8 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white py-4 rounded-lg font-bold text-lg shadow-2xl hover:shadow-slate-900/50 transform hover:scale-[1.02] transition-all duration-200 border border-slate-600/30"
+              
+              <button
+                type="submit"
+                className="w-full mt-8 py-4 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-bold text-lg rounded-lg shadow-xl transform hover:scale-[1.02] transition-all duration-200 border border-slate-500/30"
               >
                 Create Account
               </button>
-
-              <div className="mt-6 text-center">
-                <p className="text-slate-400 mb-4 text-sm">Already have an account?</p>
-                <button 
-                  type="button" 
-                  className="w-full bg-slate-800/60 text-slate-300 py-3 rounded-lg font-semibold border-2 border-slate-700 hover:bg-slate-700/60 hover:border-slate-600 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm" 
-                  onClick={() => navigate("/signin")}
-                >
-                  Sign In Instead
-                </button>
+              
+              <div className="text-center mt-6">
+                <p className="text-slate-400">
+                  Already have an account?{" "}
+                  <button
+                    type="button"
+                    onClick={() => navigate("/signin")}
+                    className="text-slate-300 hover:text-white font-semibold underline decoration-slate-500 hover:decoration-white transition-all"
+                  >
+                    Sign In
+                  </button>
+                </p>
               </div>
             </form>
           </div>
