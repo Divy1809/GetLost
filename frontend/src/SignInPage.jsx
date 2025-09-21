@@ -3,30 +3,38 @@ import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
 export default function SignInPage() {
+  const [step, setStep] = useState(1); // 1: Enter phone/email, 2: Verify OTP
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [otp, setOTP] = useState("");
+  const [userId, setUserId] = useState(null);
+  const [otpType, setOtpType] = useState(null); // 'phone' or 'email'
   const [errorMessage, setErrorMessage] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const { setUserId } = useUser();
+  const [loading, setLoading] = useState(false);
+  const { setUserId: setUserContext } = useUser();
   const navigate = useNavigate();
 
-  const handleSignIn = async (e) => {
+  const handleInitiateSignIn = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+    setLoading(true);
 
     // Validate input
     if (!phone && !email) {
       setErrorMessage("Please enter either your phone number or email address");
+      setLoading(false);
       return;
     }
 
     if (phone && (!phone.startsWith("+91") || phone.length !== 13)) {
       setErrorMessage("Phone number must be in format +91XXXXXXXXXX");
+      setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signin", {
+      const res = await fetch("http://localhost:5000/api/auth/signin/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: phone || undefined, email: email || undefined }),
@@ -36,15 +44,83 @@ export default function SignInPage() {
       
       if (res.ok) {
         setUserId(data.userId);
+        setOtpType(data.otpType);
+        setStep(2);
+        setErrorMessage("");
+      } else {
+        setErrorMessage(data.error || "Failed to send OTP. Please check your credentials.");
+      }
+    } catch (error) {
+      setErrorMessage("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setLoading(true);
+
+    if (!otp) {
+      setErrorMessage("Please enter the OTP");
+      setLoading(false);
+      return;
+    }
+
+    if (otp.length !== 6) {
+      setErrorMessage("OTP must be 6 digits long");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, otp, otpType }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUserContext(data.userId);
         setShowSuccessModal(true);
         setTimeout(() => {
           navigate("/");
         }, 1500);
       } else {
-        setErrorMessage(data.error || "Sign in failed. Please check your credentials.");
+        setErrorMessage(data.error || "OTP verification failed. Please try again.");
       }
     } catch (error) {
       setErrorMessage("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/signin/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phone || undefined, email: email || undefined }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        setUserId(data.userId);
+        setErrorMessage("OTP resent successfully!");
+        setTimeout(() => setErrorMessage(""), 3000);
+      } else {
+        setErrorMessage(data.error || "Failed to resend OTP.");
+      }
+    } catch (error) {
+      setErrorMessage("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,63 +218,130 @@ export default function SignInPage() {
               </div>
             )}
 
-            <form onSubmit={handleSignIn}>
-              <h2 className="text-4xl font-bold text-white mb-3 text-center">Sign In</h2>
-              <p className="text-slate-400 mb-10 text-center text-lg">Welcome back to your travel journey</p>
-              
+            {/* Sign In Form */}
+            <div className="bg-slate-800/30 backdrop-blur-lg border border-slate-700/40 rounded-2xl p-8 shadow-2xl">
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  {step === 1 ? "Sign In" : "Verify OTP"}
+                </h2>
+                <p className="text-slate-400">
+                  {step === 1 
+                    ? "Enter your phone number or email to continue" 
+                    : `Enter the OTP sent to your ${otpType}`
+                  }
+                </p>
+                {step === 2 && (
+                  <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                    <p className="text-blue-300 text-sm">
+                      🔐 OTP sent to: {otpType === 'phone' ? phone : email}
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {errorMessage && (
-                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg text-red-300 text-center">
-                  {errorMessage}
+                <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg">
+                  <p className="text-red-300 text-sm">{errorMessage}</p>
                 </div>
               )}
-              
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-3">Phone Number</label>
-                  <input
-                    type="tel"
-                    placeholder="+91XXXXXXXXXX"
-                    value={phone}
-                    onChange={handlePhoneChange}
-                    className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-lg text-white placeholder-slate-400 backdrop-blur-sm"
-                  />
-                  <p className="text-xs text-slate-400 mt-1">Format: +91 followed by 10 digits</p>
-                </div>
-                
-                <div className="text-center">
-                  <span className="text-slate-400 text-sm">OR</span>
-                </div>
-                
-                <div>
-                  <label className="block text-slate-300 text-sm font-semibold mb-3">Email Address</label>
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full p-4 bg-slate-800/60 border-2 border-slate-700 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-500/30 transition-all outline-none text-lg text-white placeholder-slate-400 backdrop-blur-sm"
-                  />
-                </div>
-              </div>
 
-              <button
-                type="submit"
-                className="w-full mt-8 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white py-4 rounded-xl font-bold text-lg shadow-2xl hover:shadow-slate-900/50 transform hover:scale-[1.02] transition-all duration-200 border border-slate-600/30"
-              >
-                Sign In
-              </button>
+              {step === 1 ? (
+                <form onSubmit={handleInitiateSignIn} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={handlePhoneChange}
+                      className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/40 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition-all"
+                      placeholder="+91XXXXXXXXXX"
+                    />
+                  </div>
 
-              <div className="mt-8 text-center">
-                <p className="text-slate-400 mb-4">Don't have an account?</p>
-                <button
-                  type="button"
-                  className="w-full bg-slate-800/60 text-slate-300 py-3 rounded-xl font-semibold text-lg border-2 border-slate-700 hover:bg-slate-700/60 hover:border-slate-600 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
-                  onClick={() => navigate("/signup")}
-                >
-                  Create Account
-                </button>
+                  <div className="text-center">
+                    <span className="text-slate-400 text-sm">OR</span>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/40 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition-all"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? "Sending OTP..." : "Send OTP"}
+                  </button>
+                </form>
+              ) : (
+                <form onSubmit={handleVerifyOTP} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                      Enter OTP *
+                    </label>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOTP(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/40 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition-all text-center text-2xl tracking-widest"
+                      placeholder="000000"
+                      maxLength={6}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex space-x-4">
+                    <button
+                      type="button"
+                      onClick={handleResendOTP}
+                      disabled={loading}
+                      className="flex-1 bg-slate-600/50 hover:bg-slate-600/70 text-slate-300 py-3 px-6 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? "Resending..." : "Resend OTP"}
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="flex-1 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {loading ? "Verifying..." : "Sign In"}
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="w-full text-slate-400 hover:text-slate-300 text-sm transition-colors"
+                  >
+                    ← Back to login details
+                  </button>
+                </form>
+              )}
+
+              <div className="mt-8 pt-6 border-t border-slate-700/40 text-center">
+                <p className="text-slate-400 text-sm">
+                  Don't have an account?{" "}
+                  <button
+                    onClick={() => navigate("/signup")}
+                    className="text-slate-300 hover:text-white font-semibold transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </p>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
