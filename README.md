@@ -16,7 +16,6 @@ A modern travel planning application that helps users connect with travel compan
 - **Styling**: Tailwind CSS
 - **Backend**: Node.js + Express
 - **Database**: MySQL
-- **Authentication**: Phone number based (+91 format)
 
 ## Getting Started
 
