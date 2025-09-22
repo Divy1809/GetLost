@@ -9,6 +9,8 @@ import ShowBookingsPage from "./ShowBookingsPage";
 import CancelBookingsPage from "./CancelBookingsPage";
 import BookHotelPage from "./BookHotelPage";
 import ShowHotelBookingsPage from "./ShowHotelBookingsPage";
+import PlanBookingsPage from "./PlanBookingsPage";
+import MyBookingsPage from "./MyBookingsPage";
 import SignInPage from "./SignInPage";
 import SignUpPage from "./SignUpPage";
 import { UserProvider } from "./UserContext";
@@ -25,6 +27,8 @@ function App() {
           <Route path="/travel-groups" element={<TravelGroupsPageWrapper />} />
           <Route path="/matches" element={<MatchesPage />} />
           <Route path="/book-flights" element={<BookFlightsPage />} />
+          <Route path="/plan-bookings" element={<PlanBookingsPage />} />
+          <Route path="/my-bookings" element={<MyBookingsPage />} />
           <Route path="/show-bookings" element={<ShowBookingsPage />} />
           <Route path="/cancel-bookings" element={<CancelBookingsPage />} />
           <Route path="/book-hotels" element={<BookHotelPage />} />
