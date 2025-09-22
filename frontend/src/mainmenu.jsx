@@ -73,22 +73,6 @@ export default function MainMenu() {
           </button>
           
           <button 
-            onClick={() => navigate("/plan-bookings", { state: { currentUserId: userId, destination: selectedLocation } })} 
-            className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-emerald-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative flex items-center space-x-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <span className="text-2xl">✈️</span>
-              </div>
-              <div className="text-left">
-                <span className="block text-lg font-bold">Plan Bookings</span>
-                <span className="block text-sm text-slate-300 group-hover:text-emerald-300">Flights & Hotels</span>
-              </div>
-            </div>
-          </button>
-          
-          <button 
             onClick={() => navigate("/travel-groups", { state: { selectedLocation } })} 
             className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-purple-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
           >
@@ -194,6 +178,22 @@ export default function MainMenu() {
         {/* Right Column - Enhanced with modern design */}
         <div className="flex flex-col space-y-6 w-80">
           <button 
+            onClick={() => navigate("/plan-bookings", { state: { currentUserId: userId, destination: selectedLocation } })} 
+            className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-emerald-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative flex items-center space-x-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <span className="text-2xl">✈️</span>
+              </div>
+              <div className="text-left">
+                <span className="block text-lg font-bold">Plan Bookings</span>
+                <span className="block text-sm text-slate-300 group-hover:text-emerald-300">Flights & Hotels</span>
+              </div>
+            </div>
+          </button>
+          
+          <button 
             onClick={() => navigate("/my-bookings") } 
             className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-amber-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
           >
@@ -210,21 +210,7 @@ export default function MainMenu() {
           </button>
           
           {/* Profile/Settings Button */}
-          <button 
-            onClick={() => navigate("/profile")} 
-            className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-indigo-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative flex items-center space-x-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500/20 to-blue-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <span className="text-2xl">⚙️</span>
-              </div>
-              <div className="text-left">
-                <span className="block text-lg font-bold">Settings</span>
-                <span className="block text-sm text-slate-300 group-hover:text-indigo-300">Manage your profile</span>
-              </div>
-            </div>
-          </button>
+          
           
           {/* Enhanced Logout Button */}
           <button 
@@ -244,19 +230,10 @@ export default function MainMenu() {
           </button>
           
 
-          <div className="bg-gradient-to-r from-slate-800/40 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/40 shadow-xl">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                <span className="text-xl">�</span>
-              </div>
-              <div>
-
-              </div>
-            </div>
+          
 
           </div>
         </div>
       </div>
-    </div>
   );
 }

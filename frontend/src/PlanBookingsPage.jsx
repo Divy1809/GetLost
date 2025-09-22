@@ -5,9 +5,11 @@ import { useUser } from "./UserContext";
 const PlanBookingsPage = () => {
   const locationObj = useLocation();
   const { destination, selectedDestination } = locationObj.state || {};
-  const finalDestination = destination || selectedDestination;
+  const finalDestination = destination || selectedDestination || "Delhi";
   const { userId: currentUserId } = useUser();
   const navigate = useNavigate();
+  
+  console.log("PlanBookingsPage state:", { destination, selectedDestination, finalDestination });
   
   // Tab state
   const [activeTab, setActiveTab] = useState("flights");
@@ -84,12 +86,18 @@ const PlanBookingsPage = () => {
       booking_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
     };
 
+    console.log("Booking flight with data:", newBooking);
+
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await fetch('http://localhost:5000/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBooking),
       });
+      
+      const responseData = await res.json();
+      console.log("Flight booking response:", responseData);
+      
       if (res.ok) {
         setSuccessMessage(`Flight ${flight.flight_no} booked successfully! ✈️`);
         setShowSuccessModal(true);
@@ -97,13 +105,14 @@ const PlanBookingsPage = () => {
           setShowSuccessModal(false);
         }, 3000);
       } else {
-        setSuccessMessage('❌ Flight booking failed. Please try again.');
+        setSuccessMessage(`❌ Flight booking failed: ${responseData.error || 'Please try again.'}`);
         setShowSuccessModal(true);
         setTimeout(() => {
           setShowSuccessModal(false);
         }, 3000);
       }
     } catch (err) {
+      console.error("Flight booking error:", err);
       setSuccessMessage('❌ Flight booking failed. Please check your connection.');
       setShowSuccessModal(true);
       setTimeout(() => {
@@ -122,12 +131,18 @@ const PlanBookingsPage = () => {
       booking_date: new Date().toISOString().slice(0, 19).replace('T', ' '),
     };
 
+    console.log("Booking hotel with data:", newBooking);
+
     try {
-      const res = await fetch('/api/hotelBookings', {
+      const res = await fetch('http://localhost:5000/api/hotelBookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBooking),
       });
+      
+      const responseData = await res.json();
+      console.log("Hotel booking response:", responseData);
+      
       if (res.ok) {
         setSuccessMessage(`Hotel "${selectedHotel}" booked successfully! 🏨`);
         setShowSuccessModal(true);
@@ -135,7 +150,7 @@ const PlanBookingsPage = () => {
           setShowSuccessModal(false);
         }, 3000);
       } else {
-        setSuccessMessage('❌ Hotel booking failed. Please try again.');
+        setSuccessMessage(`❌ Hotel booking failed: ${responseData.error || 'Please try again.'}`);
         setShowSuccessModal(true);
         setTimeout(() => {
           setShowSuccessModal(false);

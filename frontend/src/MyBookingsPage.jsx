@@ -23,13 +23,17 @@ const MyBookingsPage = () => {
     setLoading(true);
     setError("");
     try {
+      console.log("Loading bookings for user:", currentUserId);
+      
       // Load flight bookings
-      const flightRes = await fetch(`/api/bookings?userId=${currentUserId}`);
+      const flightRes = await fetch(`http://localhost:5000/api/bookings?userId=${currentUserId}`);
       const flightData = await flightRes.json();
+      console.log("Flight bookings response:", flightData);
       
       // Load hotel bookings
-      const hotelRes = await fetch(`/api/hotelBookings?userId=${currentUserId}`);
+      const hotelRes = await fetch(`http://localhost:5000/api/hotelBookings?userId=${currentUserId}`);
       const hotelData = await hotelRes.json();
+      console.log("Hotel bookings response:", hotelData);
       
       // Handle different response formats
       setFlightBookings(flightData.bookings || flightData || []);
@@ -46,7 +50,7 @@ const MyBookingsPage = () => {
 
   const handleCancelFlightBooking = async (bookingId) => {
     try {
-      const res = await fetch(`/api/bookings/${bookingId}`, {
+      const res = await fetch(`http://localhost:5000/api/bookings/${bookingId}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -62,7 +66,7 @@ const MyBookingsPage = () => {
 
   const handleCancelHotelBooking = async (bookingId) => {
     try {
-      const res = await fetch(`/api/hotelBookings/${bookingId}`, {
+      const res = await fetch(`http://localhost:5000/api/hotelBookings/${bookingId}`, {
         method: "DELETE",
       });
       if (res.ok) {
