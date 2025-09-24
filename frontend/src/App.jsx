@@ -13,6 +13,7 @@ import PlanBookingsPage from "./PlanBookingsPage";
 import MyBookingsPage from "./MyBookingsPage";
 import SignInPage from "./SignInPage";
 import SignUpPage from "./SignUpPage";
+import AIPage from "./AIPage";
 import { UserProvider } from "./UserContext";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/tinder" element={<TinderLikePage />} />
           <Route path="/travel-groups" element={<TravelGroupsPageWrapper />} />
           <Route path="/matches" element={<MatchesPage />} />
+          <Route path="/ai-agent" element={<AIPage />} />
           <Route path="/book-flights" element={<BookFlightsPage />} />
           <Route path="/plan-bookings" element={<PlanBookingsPage />} />
           <Route path="/my-bookings" element={<MyBookingsPage />} />

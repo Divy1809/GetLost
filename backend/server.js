@@ -60,6 +60,9 @@ app.use('/api/travel-posts', travelPostsRoutes);
 const usersRoutes = require('./routes/users');
 app.use('/api/users', usersRoutes);
 
+const connectionRequestsRoutes = require('./routes/connectionRequests');
+app.use('/api/connection-requests', connectionRequestsRoutes);
+
 const hotelBookingsRoutes = require('./routes/hotelBookings');
 app.use('/api/hotelBookings', hotelBookingsRoutes);
 

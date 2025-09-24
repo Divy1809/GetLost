@@ -1,11 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function TravelGroupsPage({ selectedLocation, onBack }) {
+export default function TravelGroupsPage({ selectedLocation: initialLocation, onBack }) {
   const navigate = useNavigate();
   const [showPrivate, setShowPrivate] = useState(false);
   const [privateCode, setPrivateCode] = useState("");
   const [showQR, setShowQR] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(initialLocation || "Delhi");
+
+  const locations = [
+    "Delhi", "Mumbai", "Bangalore", "Chennai", "Hyderabad",
+    "Kolkata", "Pune", "Jaipur", "Ahmedabad"
+  ];
 
   // Handler for Create Group
   const handleCreateGroup = () => {
@@ -32,6 +38,56 @@ export default function TravelGroupsPage({ selectedLocation, onBack }) {
       
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
         <h1 className="text-4xl font-bold text-center mb-8 text-white">Travel Groups</h1>
+        
+        {/* Enhanced destination selector at top */}
+        <div className="relative mb-12">
+          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur opacity-30"></div>
+          <div className="relative bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-8 border border-slate-600/40 shadow-2xl transform hover:scale-105 transition-all duration-500 min-w-[450px]">
+            {/* Header with icon */}
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mr-4">
+                <span className="text-3xl">🌍</span>
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-slate-200">Select Destination</h3>
+                <p className="text-slate-400 text-sm">Where do you want to explore?</p>
+              </div>
+            </div>
+            
+            {/* Enhanced dropdown */}
+            <div className="relative">
+              <select
+                value={selectedLocation}
+                onChange={(e) => setSelectedLocation(e.target.value)}
+                className="w-full p-6 border-2 border-slate-600/50 rounded-2xl bg-slate-800/80 text-white text-xl font-medium focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 backdrop-blur-sm transition-all duration-300 shadow-inner hover:bg-slate-700/80 cursor-pointer appearance-none"
+              >
+                {locations.map((location) => (
+                  <option key={location} value={location} className="bg-slate-800 text-white py-3 text-lg">{location}</option>
+                ))}
+              </select>
+              {/* Custom dropdown arrow */}
+              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <div className="w-6 h-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-slate-300">▼</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Current selection display */}
+            <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-600/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <span className="text-slate-400 text-sm">Currently selected:</span>
+                  <span className="text-blue-400 font-semibold text-lg">{selectedLocation}</span>
+                </div>
+                <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-green-400 text-sm">✓</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="w-full max-w-4xl mx-auto flex flex-col items-center justify-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <button

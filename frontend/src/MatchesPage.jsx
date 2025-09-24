@@ -31,11 +31,16 @@ export default function MatchesPage() {
     loadReceivedRequests();
   };
 
-  // Load functions (placeholder for now)
+  // Load functions
   const loadMyConnections = async () => {
     try {
-      // TODO: Replace with actual API call
-      setMyConnections([]);
+      const response = await fetch(`/api/connection-requests/connections/${loggedInUserId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setMyConnections(data);
+      } else {
+        setMyConnections([]);
+      }
     } catch (error) {
       console.log("Error loading connections:", error);
       setMyConnections([]);
@@ -44,8 +49,13 @@ export default function MatchesPage() {
 
   const loadSentRequests = async () => {
     try {
-      // TODO: Replace with actual API call
-      setSentRequests([]);
+      const response = await fetch(`/api/connection-requests/sent/${loggedInUserId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSentRequests(data);
+      } else {
+        setSentRequests([]);
+      }
     } catch (error) {
       console.log("Error loading sent requests:", error);
       setSentRequests([]);
@@ -54,11 +64,72 @@ export default function MatchesPage() {
 
   const loadReceivedRequests = async () => {
     try {
-      // TODO: Replace with actual API call
-      setReceivedRequests([]);
+      const response = await fetch(`/api/connection-requests/received/${loggedInUserId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setReceivedRequests(data);
+      } else {
+        setReceivedRequests([]);
+      }
     } catch (error) {
       console.log("Error loading received requests:", error);
       setReceivedRequests([]);
+    }
+  };
+
+  // Action functions
+  const acceptRequest = async (requestId) => {
+    try {
+      const response = await fetch(`/api/connection-requests/${requestId}/accept`, {
+        method: 'PUT',
+      });
+      
+      if (response.ok) {
+        alert('✅ Connection request accepted!');
+        loadReceivedRequests(); // Refresh received requests
+        loadMyConnections(); // Refresh connections
+      } else {
+        alert('Error accepting request');
+      }
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      alert('Failed to accept request');
+    }
+  };
+
+  const declineRequest = async (requestId) => {
+    try {
+      const response = await fetch(`/api/connection-requests/${requestId}/decline`, {
+        method: 'PUT',
+      });
+      
+      if (response.ok) {
+        alert('❌ Connection request declined');
+        loadReceivedRequests(); // Refresh received requests
+      } else {
+        alert('Error declining request');
+      }
+    } catch (error) {
+      console.error('Error declining request:', error);
+      alert('Failed to decline request');
+    }
+  };
+
+  const cancelRequest = async (requestId) => {
+    try {
+      const response = await fetch(`/api/connection-requests/${requestId}`, {
+        method: 'DELETE',
+      });
+      
+      if (response.ok) {
+        alert('🗑️ Connection request canceled');
+        loadSentRequests(); // Refresh sent requests
+      } else {
+        alert('Error canceling request');
+      }
+    } catch (error) {
+      console.error('Error canceling request:', error);
+      alert('Failed to cancel request');
     }
   };
 
@@ -138,10 +209,14 @@ export default function MatchesPage() {
                 <div className="space-y-4">
                   {myConnections.map((connection, index) => (
                     <div key={index} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-white font-bold text-lg">{connection.name}</h3>
-                          <p className="text-slate-400">{connection.destination}</p>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-white font-bold text-lg">{connection.connection_name}</h3>
+                          <p className="text-slate-400 mb-2">{connection.connection_email}</p>
+                          <div className="text-slate-300">
+                            <p className="mb-1">✈️ {connection.travelling_from} → {connection.travelling_to}</p>
+                            <p className="text-sm">🗓️ {new Date(connection.travel_date).toLocaleDateString()}</p>
+                          </div>
                         </div>
                         <button className="bg-green-600/80 hover:bg-green-500 text-white py-2 px-4 rounded-lg font-semibold">
                           💬 Message
@@ -166,16 +241,24 @@ export default function MatchesPage() {
                 <div className="space-y-4">
                   {sentRequests.map((request, index) => (
                     <div key={index} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-white font-bold text-lg">{request.name}</h3>
-                          <p className="text-slate-400">{request.destination}</p>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-white font-bold text-lg">{request.to_user_name}</h3>
+                          <p className="text-slate-400 mb-2">{request.to_user_email}</p>
+                          <div className="text-slate-300">
+                            <p className="mb-1">✈️ {request.travelling_from} → {request.travelling_to}</p>
+                            <p className="text-sm mb-2">🗓️ {new Date(request.travel_date).toLocaleDateString()}</p>
+                            <p className="text-sm text-slate-400">Sent: {new Date(request.created_at).toLocaleDateString()}</p>
+                          </div>
                         </div>
-                        <div className="flex space-x-2">
-                          <span className="bg-yellow-600/80 text-white py-2 px-4 rounded-lg font-semibold">
-                            ⏳ Pending
+                        <div className="flex flex-col space-y-2">
+                          <span className="bg-yellow-600/80 text-white py-2 px-4 rounded-lg font-semibold text-center">
+                            ⏳ {request.status}
                           </span>
-                          <button className="bg-red-600/80 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-semibold">
+                          <button 
+                            onClick={() => cancelRequest(request.id)}
+                            className="bg-red-600/80 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-semibold"
+                          >
                             ❌ Cancel
                           </button>
                         </div>
@@ -199,16 +282,32 @@ export default function MatchesPage() {
                 <div className="space-y-4">
                   {receivedRequests.map((request, index) => (
                     <div key={index} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-white font-bold text-lg">{request.name}</h3>
-                          <p className="text-slate-400">{request.destination}</p>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-white font-bold text-lg">{request.from_user_name}</h3>
+                          <p className="text-slate-400 mb-2">{request.from_user_email}</p>
+                          <div className="text-slate-300">
+                            <p className="mb-1">✈️ {request.travelling_from} → {request.travelling_to}</p>
+                            <p className="text-sm mb-2">🗓️ {new Date(request.travel_date).toLocaleDateString()}</p>
+                            <p className="text-sm text-slate-400">Received: {new Date(request.created_at).toLocaleDateString()}</p>
+                            {request.message && (
+                              <p className="text-sm text-slate-300 mt-2 p-2 bg-slate-800/40 rounded">
+                                💬 "{request.message}"
+                              </p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex space-x-2">
-                          <button className="bg-green-600/80 hover:bg-green-500 text-white py-2 px-4 rounded-lg font-semibold">
+                        <div className="flex flex-col space-y-2">
+                          <button 
+                            onClick={() => acceptRequest(request.id)}
+                            className="bg-green-600/80 hover:bg-green-500 text-white py-2 px-4 rounded-lg font-semibold"
+                          >
                             ✅ Accept
                           </button>
-                          <button className="bg-red-600/80 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-semibold">
+                          <button 
+                            onClick={() => declineRequest(request.id)}
+                            className="bg-red-600/80 hover:bg-red-500 text-white py-2 px-4 rounded-lg font-semibold"
+                          >
                             ❌ Decline
                           </button>
                         </div>

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 
 export default function MainMenu() {
-  const [selectedLocation, setSelectedLocation] = useState("Delhi");
   const navigate = useNavigate();
   const { userId, setUserId } = useUser();
 
@@ -13,11 +12,6 @@ export default function MainMenu() {
       navigate("/signin");
     }
   }, [userId, navigate]);
-
-  const locations = [
-    "Delhi", "Mumbai", "Bangalore", "Chennai", "Hyderabad",
-    "Kolkata", "Pune", "Jaipur", "Ahmedabad"
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black relative overflow-hidden">
@@ -41,7 +35,7 @@ export default function MainMenu() {
         {/* Left Column - Enhanced with gradient borders and improved animations */}
         <div className="flex flex-col space-y-6 w-80">
           <button 
-            onClick={() => navigate("/tinder", { state: { location: selectedLocation, loggedInUserId: userId } })} 
+            onClick={() => navigate("/tinder", { state: { location: "Delhi", loggedInUserId: userId } })} 
             className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-blue-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -73,17 +67,33 @@ export default function MainMenu() {
           </button>
           
           <button 
-            onClick={() => navigate("/travel-groups", { state: { selectedLocation } })} 
+            onClick={() => navigate("/travel-groups", { state: { selectedLocation: "Delhi" } })} 
             className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-purple-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-violet-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="relative flex items-center space-x-4">
               <div className="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-violet-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <span className="text-2xl">�</span>
+                <span className="text-2xl">👥</span>
               </div>
               <div className="text-left">
                 <span className="block text-lg font-bold">Travel Groups</span>
                 <span className="block text-sm text-slate-300 group-hover:text-purple-300">Join group adventures</span>
+              </div>
+            </div>
+          </button>
+          
+          <button 
+            onClick={() => navigate("/ai-agent")} 
+            className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-cyan-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="relative flex items-center space-x-4">
+              <div className="w-14 h-14 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <span className="text-2xl">🤖</span>
+              </div>
+              <div className="text-left">
+                <span className="block text-lg font-bold">Your Personal AI Travel Agent</span>
+                <span className="block text-sm text-slate-300 group-hover:text-cyan-300">AI-powered assistance</span>
               </div>
             </div>
           </button>
@@ -124,61 +134,12 @@ export default function MainMenu() {
               </div>
             </div>
           </div>
-          
-          {/* Enhanced destination selector with modern glassmorphism */}
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur opacity-30"></div>
-            <div className="relative bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-8 border border-slate-600/40 shadow-2xl transform hover:scale-105 transition-all duration-500 min-w-[450px]">
-              {/* Header with icon */}
-              <div className="flex items-center justify-center mb-6">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mr-4">
-                  <span className="text-3xl">🌍</span>
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-200">Select Destination</h3>
-                  <p className="text-slate-400 text-sm">Where do you want to explore?</p>
-                </div>
-              </div>
-              
-              {/* Enhanced dropdown */}
-              <div className="relative">
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="w-full p-6 border-2 border-slate-600/50 rounded-2xl bg-slate-800/80 text-white text-xl font-medium focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 backdrop-blur-sm transition-all duration-300 shadow-inner hover:bg-slate-700/80 cursor-pointer appearance-none"
-                >
-                  {locations.map((location) => (
-                    <option key={location} value={location} className="bg-slate-800 text-white py-3 text-lg">{location}</option>
-                  ))}
-                </select>
-                {/* Custom dropdown arrow */}
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                    <span className="text-slate-300">▼</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Current selection display */}
-              <div className="mt-6 p-4 bg-slate-900/50 rounded-xl border border-slate-600/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-400 text-sm">Currently selected:</span>
-                    <span className="text-blue-400 font-semibold text-lg">{selectedLocation}</span>
-                  </div>
-                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
-                    <span className="text-green-400 text-sm">✓</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Right Column - Enhanced with modern design */}
         <div className="flex flex-col space-y-6 w-80">
           <button 
-            onClick={() => navigate("/plan-bookings", { state: { currentUserId: userId, destination: selectedLocation } })} 
+            onClick={() => navigate("/plan-bookings", { state: { currentUserId: userId, destination: "Delhi" } })} 
             className="group relative bg-gradient-to-r from-slate-800/60 to-slate-700/60 hover:from-slate-700/80 hover:to-slate-600/80 text-white py-8 px-8 rounded-2xl font-semibold text-lg shadow-2xl border border-slate-600/40 hover:border-emerald-500/50 transform hover:scale-[1.05] hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

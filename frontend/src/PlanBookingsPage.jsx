@@ -221,6 +221,26 @@ const PlanBookingsPage = () => {
               >
                 🏨 Hotels
               </button>
+              <button
+                onClick={() => setActiveTab("taxi")}
+                className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 mx-1 ${
+                  activeTab === "taxi"
+                    ? "bg-yellow-600/70 text-white shadow-lg border border-yellow-500/50"
+                    : "text-slate-300 hover:text-white hover:bg-slate-600/30"
+                }`}
+              >
+                🚕 Taxi
+              </button>
+              <button
+                onClick={() => setActiveTab("rent")}
+                className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 mx-1 ${
+                  activeTab === "rent"
+                    ? "bg-green-600/70 text-white shadow-lg border border-green-500/50"
+                    : "text-slate-300 hover:text-white hover:bg-slate-600/30"
+                }`}
+              >
+                🚗 Rent Vehicle
+              </button>
             </div>
           </div>
 
@@ -323,6 +343,68 @@ const PlanBookingsPage = () => {
                       className="w-full bg-orange-600/60 hover:bg-orange-500/60 text-white py-4 rounded-xl font-bold shadow-lg border border-orange-500/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
                     >
                       Book This Hotel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Taxi Tab */}
+            {activeTab === "taxi" && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-6">Book a Taxi</h2>
+                </div>
+                
+                <div className="max-w-lg mx-auto">
+                  <div className="bg-slate-700/30 backdrop-blur-sm border border-slate-600/30 rounded-xl p-8 text-center">
+                    <div className="w-20 h-20 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <span className="text-4xl">🚕</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Taxi Booking</h3>
+                    <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg p-6 mb-6">
+                      <p className="text-yellow-300 font-semibold text-lg mb-2">🚧 Coming Soon!</p>
+                      <p className="text-slate-300">
+                        We're working hard to bring you convenient taxi booking services. 
+                        Stay tuned for quick and reliable rides around {finalDestination}!
+                      </p>
+                    </div>
+                    <button
+                      disabled
+                      className="w-full bg-slate-600/40 text-slate-400 py-4 rounded-xl font-bold border border-slate-500/30 cursor-not-allowed"
+                    >
+                      Coming Soon
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Rent Vehicle Tab */}
+            {activeTab === "rent" && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-white mb-6">Rent a Vehicle</h2>
+                </div>
+                
+                <div className="max-w-lg mx-auto">
+                  <div className="bg-slate-700/30 backdrop-blur-sm border border-slate-600/30 rounded-xl p-8 text-center">
+                    <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <span className="text-4xl">🚗</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">Vehicle Rental</h3>
+                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-lg p-6 mb-6">
+                      <p className="text-green-300 font-semibold text-lg mb-2">🚧 Coming Soon!</p>
+                      <p className="text-slate-300">
+                        Self-drive car rentals are on the way! Explore {finalDestination} at your own pace 
+                        with our upcoming vehicle rental service.
+                      </p>
+                    </div>
+                    <button
+                      disabled
+                      className="w-full bg-slate-600/40 text-slate-400 py-4 rounded-xl font-bold border border-slate-500/30 cursor-not-allowed"
+                    >
+                      Coming Soon
                     </button>
                   </div>
                 </div>

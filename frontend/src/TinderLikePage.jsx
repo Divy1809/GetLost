@@ -138,6 +138,46 @@ export default function TinderLikePage() {
     }
   };
 
+  // Function to send connection request
+  const sendConnectionRequest = async (post) => {
+    console.log('Sending connection request:', {
+      fromUserId: loggedInUserId,
+      toUserId: post.user_id,
+      postId: post.id
+    });
+
+    try {
+      const response = await fetch('/api/connection-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fromUserId: loggedInUserId,
+          toUserId: post.user_id,
+          postId: post.id,
+          message: `I'd like to connect regarding your travel from ${post.travelling_from} to ${post.travelling_to}`
+        }),
+      });
+
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (response.ok && data.success) {
+        alert('🎉 Connection request sent successfully!');
+        // Remove the post from explore posts since request is sent
+        setExplorePosts(explorePosts.filter(p => p.id !== post.id));
+      } else {
+        alert('Error sending connection request: ' + (data.error || 'Unknown error'));
+        console.error('Server error:', data);
+      }
+    } catch (error) {
+      console.error('Network error sending connection request:', error);
+      alert('Network error: Failed to send connection request. Please check if the server is running.');
+    }
+  };
+
   // Handler for My Posts tab
   const handleMyPosts = () => {
     setActiveTab("myposts");
@@ -533,7 +573,10 @@ export default function TinderLikePage() {
                         <button className="flex-1 bg-green-600/80 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-green-500/50 transform hover:scale-[1.02] transition-all duration-200">
                           💬 Contact Traveller
                         </button>
-                        <button className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200">
+                        <button 
+                          onClick={() => sendConnectionRequest(post)}
+                          className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200"
+                        >
                           ❤️ Like Post
                         </button>
                       </div>
