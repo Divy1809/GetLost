@@ -4,21 +4,20 @@ const db = require('../config/db');
 
 // POST /api/travel-posts - Create a new travel post
 router.post('/', (req, res) => {
-  const { userId, originCity, destinationCity, travelDate, description, interests, budget } = req.body;
+  const { userId, userName, travellingFrom, travellingTo, travelDate } = req.body;
   
-  if (!userId || !originCity || !destinationCity || !travelDate) {
-    return res.status(400).json({ error: 'userId, originCity, destinationCity, and travelDate are required' });
+  if (!userId || !userName || !travellingFrom || !travellingTo || !travelDate) {
+    return res.status(400).json({ 
+      error: 'All fields are required: userId, userName, travellingFrom, travellingTo, and travelDate' 
+    });
   }
 
-  // Convert interests array to JSON string for storage
-  const interestsJson = interests ? JSON.stringify(interests) : null;
-
   const query = `
-    INSERT INTO travel_posts (user_id, origin_city, destination_city, travel_date, description, interests, budget, created_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+    INSERT INTO travel_posts (user_id, user_name, travelling_from, travelling_to, travel_date)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  db.query(query, [userId, originCity, destinationCity, travelDate, description, interestsJson, budget], (err, result) => {
+  db.query(query, [userId, userName, travellingFrom, travellingTo, travelDate], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to create travel post' });
@@ -27,22 +26,35 @@ router.post('/', (req, res) => {
     res.status(201).json({ 
       success: true,
       message: 'Travel post created successfully',
-      postId: result.insertId
+      postId: result.insertId,
+      data: {
+        id: result.insertId,
+        userId,
+        userName,
+        travellingFrom,
+        travellingTo,
+        travelDate
+      }
     });
   });
 });
 
 // GET /api/travel-posts - Get all travel posts with user info
 router.get('/', (req, res) => {
-  const { destination, excludeUserId } = req.query;
+  const { destination, excludeUserId, userId } = req.query;
   
   let query = `
     SELECT 
-      tp.*,
-      u.name as user_name,
+      tp.id,
+      tp.user_id,
+      tp.user_name,
+      tp.travelling_from,
+      tp.travelling_to,
+      tp.travel_date,
+      tp.created_at,
+      tp.updated_at,
       u.phone as user_phone,
-      u.email as user_email,
-      TIMESTAMPDIFF(YEAR, CURDATE(), CURDATE()) + 25 as user_age
+      u.email as user_email
     FROM travel_posts tp
     JOIN users u ON tp.user_id = u.id
   `;
@@ -51,13 +63,19 @@ router.get('/', (req, res) => {
   const conditions = [];
   
   if (destination) {
-    conditions.push('tp.destination_city = ?');
+    conditions.push('tp.travelling_to = ?');
     params.push(destination);
   }
   
   if (excludeUserId) {
     conditions.push('tp.user_id != ?');
     params.push(excludeUserId);
+  }
+  
+  // Filter by specific userId (for "My Posts" functionality)
+  if (userId) {
+    conditions.push('tp.user_id = ?');
+    params.push(userId);
   }
   
   if (conditions.length > 0) {
@@ -72,7 +90,12 @@ router.get('/', (req, res) => {
       return res.status(500).json({ error: 'Failed to fetch travel posts' });
     }
     
-    // Parse interests JSON for each post
+    // For userId queries, return the results directly as an array
+    if (userId) {
+      return res.json(results);
+    }
+    
+    // Parse interests JSON for each post (for non-userId queries)
     const postsWithParsedInterests = results.map(post => ({
       ...post,
       interests: post.interests ? JSON.parse(post.interests) : []

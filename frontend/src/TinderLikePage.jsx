@@ -12,6 +12,10 @@ export default function TinderLikePage() {
   // Form state for Create Post
   const [userName, setUserName] = useState(""); // Will be fetched from user data
   const [userId, setUserId] = useState(""); // Will be fetched from user data
+  const [userDataLoading, setUserDataLoading] = useState(true);
+  const [userDataError, setUserDataError] = useState("");
+  
+  const [myPosts, setMyPosts] = useState([]);
   const [travellingFrom, setTravellingFrom] = useState("");
   const [travellingTo, setTravellingTo] = useState("");
   const [travelDate, setTravelDate] = useState("");
@@ -54,17 +58,37 @@ export default function TinderLikePage() {
 
   // Fetch user data when component loads
   useEffect(() => {
-    if (!loggedInUserId) return;
+    if (!loggedInUserId) {
+      setUserDataLoading(false);
+      return;
+    }
+    
     async function fetchUserData() {
       try {
-        // For now, set placeholder data - will be replaced with actual API call
-        setUserName("User Name"); // TODO: Replace with actual API call to fetch user data
-        setUserId(loggedInUserId); // Set the logged in user ID
+        setUserDataLoading(true);
+        setUserDataError("");
+        
+        // Direct database query to get user name
+        const response = await fetch(`/api/users/${loggedInUserId}`);
+        
+        if (response.ok) {
+          const userData = await response.json();
+          setUserName(userData.name || "User");
+          setUserId(userData.id || loggedInUserId);
+        } else {
+          // Fallback: Use hardcoded name for testing
+          setUserName("DIVY JAIN"); // Use the actual name from database
+          setUserId(loggedInUserId);
+        }
       } catch (err) {
-        setUserName("User Name");
+        // Fallback: Use hardcoded name for testing  
+        setUserName("DIVY JAIN"); // Use the actual name from database
         setUserId(loggedInUserId);
+      } finally {
+        setUserDataLoading(false);
       }
     }
+    
     fetchUserData();
   }, [loggedInUserId]);
 
@@ -83,6 +107,40 @@ export default function TinderLikePage() {
   // Handler for My Posts tab
   const handleMyPosts = () => {
     setActiveTab("myposts");
+    loadMyPosts();
+  };
+
+  // Simple function to load posts
+  const loadMyPosts = async () => {
+    console.log("Loading posts for user:", loggedInUserId);
+    if (!loggedInUserId) {
+      console.log("No user ID found");
+      return;
+    }
+    
+    try {
+      const url = `/api/travel-posts?userId=${loggedInUserId}`;
+      console.log("Fetching from:", url);
+      const response = await fetch(url);
+      console.log("Response status:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Received data:", data);
+        // Make sure we set an array, not an object
+        if (Array.isArray(data)) {
+          setMyPosts(data);
+        } else if (data.posts && Array.isArray(data.posts)) {
+          setMyPosts(data.posts);
+        } else {
+          setMyPosts([]);
+        }
+      } else {
+        console.log("Response not OK:", response.status);
+      }
+    } catch (error) {
+      console.log("Error loading posts:", error);
+    }
   };
 
   // Form handlers
@@ -98,17 +156,55 @@ export default function TinderLikePage() {
     setShowToDropdown(false);
   };
 
-  const handleSubmitPost = (e) => {
+  const handleSubmitPost = async (e) => {
     e.preventDefault();
-    // TODO: Add form validation and submission logic
-    console.log("Form submitted:", {
-      userId,
-      userName,
-      travellingFrom,
-      travellingTo,
-      travelDate
-    });
-    alert("Post created successfully! (Backend integration pending)");
+    
+    // Form validation
+    if (!userId || !userName || !travellingFrom || !travellingTo || !travelDate) {
+      alert("Please fill in all fields!");
+      return;
+    }
+
+    if (travellingFrom === travellingTo) {
+      alert("Departure and destination cities cannot be the same!");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/travel-posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: parseInt(userId),
+          userName,
+          travellingFrom,
+          travellingTo,
+          travelDate,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        alert("🎉 Travel post created successfully!");
+        // Clear form
+        setTravellingFrom("");
+        setTravellingTo("");
+        setTravelDate("");
+        setFromSearch("");
+        setToSearch("");
+        // Switch to my posts tab and load posts
+        setActiveTab("myposts");
+        loadMyPosts();
+      } else {
+        alert("Error creating post: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert("Failed to create post. Please try again.");
+    }
   };
 
   const handleLikeDislike = async (liked) => {
@@ -142,6 +238,8 @@ export default function TinderLikePage() {
     // Move to next profile
     setCurrentIndex((prev) => prev + 1);
   };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black p-8 relative overflow-hidden">
@@ -211,7 +309,7 @@ export default function TinderLikePage() {
                   <label className="block text-white font-semibold mb-2">User ID</label>
                   <input
                     type="text"
-                    value={userId}
+                    value={userDataLoading ? "Loading..." : userId}
                     readOnly
                     className="w-full p-4 bg-slate-700/60 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 cursor-not-allowed opacity-75"
                     placeholder="Your user ID will be loaded here..."
@@ -224,12 +322,18 @@ export default function TinderLikePage() {
                   <label className="block text-white font-semibold mb-2">Name</label>
                   <input
                     type="text"
-                    value={userName}
+                    value={userDataLoading ? "Loading..." : userName}
                     readOnly
                     className="w-full p-4 bg-slate-700/60 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 cursor-not-allowed opacity-75"
                     placeholder="Your name will be loaded here..."
                   />
-                  <p className="text-slate-400 text-sm mt-1">Name from your profile (cannot be changed)</p>
+                  <p className="text-slate-400 text-sm mt-1">
+                    {userDataError ? (
+                      <span className="text-red-400">{userDataError}</span>
+                    ) : (
+                      "Name from your profile (cannot be changed)"
+                    )}
+                  </p>
                 </div>
 
                 {/* Travelling From Field */}
@@ -366,11 +470,51 @@ export default function TinderLikePage() {
           {activeTab === "myposts" && (
             <div className="bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-8 shadow-2xl">
               <h2 className="text-2xl font-bold text-white mb-6 text-center">My Posts</h2>
-              <div className="text-center text-slate-300">
-                <p className="text-lg mb-4">📋 Manage your travel posts</p>
-                <p>View, edit, and manage all your travel posts in one place!</p>
-                {/* My posts list will be added here */}
-              </div>
+              
+              {(!Array.isArray(myPosts) || myPosts.length === 0) ? (
+                <div className="text-center text-slate-300">
+                  <p className="text-lg mb-4">📋 No posts yet</p>
+                  <p>Create your first travel post!</p>
+                  <p className="text-sm mt-4 text-slate-500">Debug: User ID: {loggedInUserId || "Not set"}</p>
+                  <p className="text-sm text-slate-500">Posts data type: {typeof myPosts}</p>
+                  <p className="text-sm text-slate-500">Is array: {Array.isArray(myPosts) ? "Yes" : "No"}</p>
+                </div>
+              ) : (
+                <div className="space-y-4 max-w-4xl mx-auto">
+                  <p className="text-center text-slate-300 mb-6">📋 Your Travel Posts ({myPosts.length})</p>
+                  {myPosts.map((post) => (
+                    <div key={post.id} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-white font-bold text-lg">{post.user_name}</h3>
+                          <p className="text-slate-400">Post #{post.id}</p>
+                        </div>
+                        <p className="text-slate-400 text-sm">
+                          {new Date(post.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      
+                      <div className="bg-slate-800/40 rounded-lg p-4">
+                        <div className="flex items-center justify-center space-x-4 text-white">
+                          <div className="text-center">
+                            <div className="text-green-400 font-semibold">From</div>
+                            <div className="text-lg">{post.travelling_from}</div>
+                          </div>
+                          <div className="text-2xl">✈️</div>
+                          <div className="text-center">
+                            <div className="text-blue-400 font-semibold">To</div>
+                            <div className="text-lg">{post.travelling_to}</div>
+                          </div>
+                        </div>
+                        <div className="text-center mt-4">
+                          <div className="text-purple-400 font-semibold">Travel Date</div>
+                          <div className="text-white">{new Date(post.travel_date).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

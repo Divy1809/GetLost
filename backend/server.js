@@ -57,6 +57,8 @@ app.use('/api/bookings', bookingsRoutes);
 const travelPostsRoutes = require('./routes/travelPosts');
 app.use('/api/travel-posts', travelPostsRoutes);
 
+const usersRoutes = require('./routes/users');
+app.use('/api/users', usersRoutes);
 
 const hotelBookingsRoutes = require('./routes/hotelBookings');
 app.use('/api/hotelBookings', hotelBookingsRoutes);
