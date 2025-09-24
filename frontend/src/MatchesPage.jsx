@@ -160,7 +160,7 @@ export default function MatchesPage() {
             <div className="flex space-x-2">
               <button
                 onClick={handleConnectionsTab}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "connections"
                     ? "bg-green-600/80 text-white shadow-lg border border-green-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -171,7 +171,7 @@ export default function MatchesPage() {
               </button>
               <button
                 onClick={handleSentTab}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "sent"
                     ? "bg-blue-600/80 text-white shadow-lg border border-blue-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -182,7 +182,7 @@ export default function MatchesPage() {
               </button>
               <button
                 onClick={handleReceivedTab}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "received"
                     ? "bg-purple-600/80 text-white shadow-lg border border-purple-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -323,7 +323,7 @@ export default function MatchesPage() {
           <div className="flex justify-center mt-10">
             <button
               onClick={() => navigate(-1)}
-              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 backdrop-blur-sm"
             >
               Back to Menu
             </button>

@@ -71,7 +71,7 @@ export default function BookHotelPage() {
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-lg border-2 border-slate-600/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform animate-pulse">
+          <div className="bg-gradient-to-br from-slate-800/90 to-slate-700/90 backdrop-blur-lg border-2 border-slate-600/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">✅</span>
@@ -79,7 +79,7 @@ export default function BookHotelPage() {
               <h3 className="text-2xl font-bold text-white mb-3">Booking Confirmed!</h3>
               <p className="text-slate-300 text-lg mb-6">{successMessage}</p>
               <div className="w-full bg-slate-600/30 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
+                <div className="bg-green-500 h-2 rounded-full" style={{width: '100%'}}></div>
               </div>
               <p className="text-slate-400 text-sm mt-3">This message will close automatically</p>
             </div>
@@ -114,14 +114,14 @@ export default function BookHotelPage() {
 
             <button
               onClick={handleBooking}
-              className="w-full bg-blue-600/60 hover:bg-blue-500/60 text-white py-4 rounded-xl font-bold shadow-lg border border-blue-500/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm mb-4"
+              className="w-full bg-blue-600/60 hover:bg-blue-500/60 text-white py-4 rounded-xl font-bold shadow-lg border border-blue-500/30 backdrop-blur-sm mb-4"
             >
               Book Hotel
             </button>
             
             <button
               onClick={() => navigate(-1)}
-              className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-white py-4 rounded-xl font-bold shadow-lg border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-white py-4 rounded-xl font-bold shadow-lg border border-slate-600/30 backdrop-blur-sm"
             >
               Back to Menu
             </button>

@@ -211,7 +211,7 @@ export default function SignInPage() {
                     <h3 className="text-2xl font-bold text-white mb-3">Welcome Back!</h3>
                     <p className="text-slate-300 text-lg mb-6">Redirecting to your dashboard...</p>
                     <div className="w-full bg-slate-600/30 rounded-full h-2">
-                      <div className="bg-green-500 h-2 rounded-full animate-pulse" style={{width: '100%'}}></div>
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: '100%'}}></div>
                     </div>
                   </div>
                 </div>

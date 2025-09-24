@@ -42,7 +42,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation, on
         {/* Enhanced destination selector at top */}
         <div className="relative mb-12">
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur opacity-30"></div>
-          <div className="relative bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-8 border border-slate-600/40 shadow-2xl transform hover:scale-105 transition-all duration-500 min-w-[450px]">
+          <div className="relative bg-gradient-to-r from-slate-800/60 via-slate-700/60 to-slate-800/60 backdrop-blur-xl rounded-3xl p-8 border border-slate-600/40 shadow-2xl min-w-[450px]">
             {/* Header with icon */}
             <div className="flex items-center justify-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center mr-4">
@@ -59,14 +59,14 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation, on
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="w-full p-6 border-2 border-slate-600/50 rounded-2xl bg-slate-800/80 text-white text-xl font-medium focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 backdrop-blur-sm transition-all duration-300 shadow-inner hover:bg-slate-700/80 cursor-pointer appearance-none"
+                className="w-full p-6 border-2 border-slate-600/50 rounded-2xl bg-slate-800/80 text-white text-xl font-medium focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/30 backdrop-blur-sm shadow-inner hover:bg-slate-700/80 cursor-pointer appearance-none"
               >
                 {locations.map((location) => (
                   <option key={location} value={location} className="bg-slate-800 text-white py-3 text-lg">{location}</option>
                 ))}
               </select>
               {/* Custom dropdown arrow */}
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <div className="absolute right-4 top-1/2 pointer-events-none" style={{transform: 'translateY(-50%)'}}>
                 <div className="w-6 h-6 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
                   <span className="text-slate-300">▼</span>
                 </div>
@@ -92,21 +92,21 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation, on
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <button
               onClick={handleCreateGroup}
-              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 backdrop-blur-sm"
             >
               <span className="text-4xl mb-4">💬</span>
               <span className="font-bold text-lg">Create Group</span>
             </button>
             <button
               onClick={() => setShowPrivate(true)}
-              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 backdrop-blur-sm"
             >
               <span className="text-4xl mb-4">🔒</span>
               <span className="font-bold text-lg">Join Private Group</span>
             </button>
             <button
               onClick={handleJoinGroup}
-              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="flex flex-col items-center justify-center bg-slate-700/60 hover:bg-slate-600/60 text-white py-8 rounded-xl shadow-2xl border border-slate-600/30 backdrop-blur-sm"
             >
               <span className="text-4xl mb-4">🌐</span>
               <span className="font-bold text-lg">Join Group</span>
@@ -125,7 +125,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation, on
               />
               <button
                 onClick={handleJoinPrivate}
-                className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-6 rounded-xl font-bold shadow-lg border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+                className="w-full bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-6 rounded-xl font-bold shadow-lg border border-slate-600/30 backdrop-blur-sm"
               >
                 Join Private Group
               </button>
@@ -151,7 +151,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation, on
           <div className="flex justify-center mt-10">
             <button
               onClick={() => navigate(-1)}
-              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+              className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 backdrop-blur-sm"
             >
               Back to Menu
             </button>

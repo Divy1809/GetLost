@@ -335,7 +335,7 @@ export default function TinderLikePage() {
             <div className="flex space-x-2">
               <button
                 onClick={handleCreatePost}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "create"
                     ? "bg-blue-600/80 text-white shadow-lg border border-blue-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -346,7 +346,7 @@ export default function TinderLikePage() {
               </button>
               <button
                 onClick={handleExploreTravellers}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "explore"
                     ? "bg-green-600/80 text-white shadow-lg border border-green-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -357,7 +357,7 @@ export default function TinderLikePage() {
               </button>
               <button
                 onClick={handleMyPosts}
-                className={`px-6 py-4 rounded-xl font-semibold text-base transition-all duration-300 transform hover:scale-[1.02] ${
+                className={`px-6 py-4 rounded-xl font-semibold text-base ${
                   activeTab === "myposts"
                     ? "bg-purple-600/80 text-white shadow-lg border border-purple-500/50"
                     : "bg-slate-700/60 text-slate-300 hover:bg-slate-600/60 hover:text-white border border-slate-600/30"
@@ -493,7 +493,7 @@ export default function TinderLikePage() {
                 <div className="text-center pt-4">
                   <button
                     type="submit"
-                    className="bg-blue-600/80 hover:bg-blue-500 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200 min-w-48"
+                    className="bg-blue-600/80 hover:bg-blue-500 text-white py-4 px-8 rounded-xl font-bold text-lg shadow-lg border border-blue-500/50 min-w-48"
                   >
                     Create Post ✈️
                   </button>
@@ -512,7 +512,7 @@ export default function TinderLikePage() {
                   <p>Check back later for new travel posts from other users!</p>
                   <button 
                     onClick={loadExplorePosts}
-                    className="mt-4 bg-blue-600/80 hover:bg-blue-500 text-white py-2 px-4 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200"
+                    className="mt-4 bg-blue-600/80 hover:bg-blue-500 text-white py-2 px-4 rounded-xl font-semibold shadow-lg border border-blue-500/50"
                   >
                     🔄 Refresh
                   </button>
@@ -523,7 +523,7 @@ export default function TinderLikePage() {
                     <p className="text-slate-300 text-lg">🌍 Travel Posts ({explorePosts.length})</p>
                     <button 
                       onClick={loadExplorePosts}
-                      className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-2 px-4 rounded-lg font-semibold shadow-lg border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200"
+                      className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-2 px-4 rounded-lg font-semibold shadow-lg border border-slate-600/30"
                     >
                       🔄 Refresh
                     </button>
@@ -570,12 +570,12 @@ export default function TinderLikePage() {
                       </div>
                       
                       <div className="flex space-x-4">
-                        <button className="flex-1 bg-green-600/80 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-green-500/50 transform hover:scale-[1.02] transition-all duration-200">
+                        <button className="flex-1 bg-green-600/80 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-green-500/50">
                           💬 Contact Traveller
                         </button>
                         <button 
                           onClick={() => sendConnectionRequest(post)}
-                          className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200"
+                          className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-blue-500/50"
                         >
                           ❤️ Like Post
                         </button>
@@ -643,7 +643,7 @@ export default function TinderLikePage() {
         <div className="flex justify-center mt-10">
           <button
             onClick={() => navigate(-1)}
-            className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200 backdrop-blur-sm"
+            className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-3 px-8 rounded-xl font-bold shadow-2xl border border-slate-600/30 backdrop-blur-sm"
           >
             Back to Menu
           </button>
