@@ -16,6 +16,7 @@ export default function TinderLikePage() {
   const [userDataError, setUserDataError] = useState("");
   
   const [myPosts, setMyPosts] = useState([]);
+  const [explorePosts, setExplorePosts] = useState([]);
   const [travellingFrom, setTravellingFrom] = useState("");
   const [travellingTo, setTravellingTo] = useState("");
   const [travelDate, setTravelDate] = useState("");
@@ -102,6 +103,39 @@ export default function TinderLikePage() {
   // Handler for Explore Travellers tab
   const handleExploreTravellers = () => {
     setActiveTab("explore");
+    loadExplorePosts();
+  };
+
+  // Function to load posts from other users
+  const loadExplorePosts = async () => {
+    console.log("Loading explore posts, excluding user:", loggedInUserId);
+    try {
+      // Fetch all posts excluding current user's posts
+      const url = `/api/travel-posts?excludeUserId=${loggedInUserId}`;
+      console.log("Fetching from:", url);
+      const response = await fetch(url);
+      console.log("Explore response status:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Explore data received:", data);
+        
+        // Handle both array and object responses
+        if (Array.isArray(data)) {
+          setExplorePosts(data);
+        } else if (data.posts && Array.isArray(data.posts)) {
+          setExplorePosts(data.posts);
+        } else {
+          setExplorePosts([]);
+        }
+      } else {
+        console.log("Explore response not OK:", response.status);
+        setExplorePosts([]);
+      }
+    } catch (error) {
+      console.log("Error loading explore posts:", error);
+      setExplorePosts([]);
+    }
   };
 
   // Handler for My Posts tab
@@ -432,36 +466,79 @@ export default function TinderLikePage() {
             <div className="bg-slate-800/20 backdrop-blur-sm border border-slate-700/30 rounded-2xl p-8 shadow-2xl">
               <h2 className="text-2xl font-bold text-white mb-6 text-center">Explore Travellers</h2>
               
-              {/* Current profile card */}
-              {currentProfile ? (
-                <div className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6 max-w-md mx-auto mb-6">
-                  <h3 className="text-2xl font-bold text-white mb-2">   
-                    {currentProfile.name}, {currentProfile.age}
-                  </h3>
-                  <p className="text-slate-300 mb-6">
-                    {currentProfile.originCity} ➔ {currentProfile.destinationCity}
-                  </p>
-                  
-                  {/* Like/Dislike buttons */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      onClick={() => handleLikeDislike(false)}
-                      className="bg-red-600/80 hover:bg-red-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-red-500/50 transform hover:scale-[1.02] transition-all duration-200"
-                    >
-                      👎 Pass
-                    </button>
-                    <button
-                      onClick={() => handleLikeDislike(true)}
-                      className="bg-green-600/80 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-green-500/50 transform hover:scale-[1.02] transition-all duration-200"
-                    >
-                      ❤️ Like
-                    </button>
-                  </div>
+              {(!Array.isArray(explorePosts) || explorePosts.length === 0) ? (
+                <div className="text-center text-slate-300">
+                  <p className="text-lg mb-4">🔍 No travel posts to explore</p>
+                  <p>Check back later for new travel posts from other users!</p>
+                  <button 
+                    onClick={loadExplorePosts}
+                    className="mt-4 bg-blue-600/80 hover:bg-blue-500 text-white py-2 px-4 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200"
+                  >
+                    🔄 Refresh
+                  </button>
                 </div>
               ) : (
-                <div className="text-center text-slate-300">
-                  <p className="text-lg mb-4">🔍 No more travellers to explore</p>
-                  <p>Check back later for new travel posts!</p>
+                <div className="space-y-6 max-w-4xl mx-auto">
+                  <div className="flex items-center justify-between mb-6">
+                    <p className="text-slate-300 text-lg">🌍 Travel Posts ({explorePosts.length})</p>
+                    <button 
+                      onClick={loadExplorePosts}
+                      className="bg-slate-700/60 hover:bg-slate-600/60 text-white py-2 px-4 rounded-lg font-semibold shadow-lg border border-slate-600/30 transform hover:scale-[1.02] transition-all duration-200"
+                    >
+                      🔄 Refresh
+                    </button>
+                  </div>
+                  
+                  {explorePosts.map((post) => (
+                    <div key={post.id} className="bg-slate-700/40 backdrop-blur-sm border border-slate-600/50 rounded-xl p-6 shadow-lg">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-white font-bold text-xl">{post.user_name}</h3>
+                          <p className="text-slate-400">Looking for travel companions</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-slate-400 text-sm">
+                            Posted: {new Date(post.created_at).toLocaleDateString()}
+                          </p>
+                          <p className="text-slate-500 text-xs">Post #{post.id}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-slate-800/40 rounded-lg p-6 mb-4">
+                        <div className="flex items-center justify-center space-x-6 text-white">
+                          <div className="text-center">
+                            <div className="text-green-400 font-semibold text-lg">From</div>
+                            <div className="text-xl font-bold">{post.travelling_from}</div>
+                          </div>
+                          <div className="text-3xl">✈️</div>
+                          <div className="text-center">
+                            <div className="text-blue-400 font-semibold text-lg">To</div>
+                            <div className="text-xl font-bold">{post.travelling_to}</div>
+                          </div>
+                        </div>
+                        <div className="text-center mt-4">
+                          <div className="text-purple-400 font-semibold">Travel Date</div>
+                          <div className="text-white text-lg font-semibold">
+                            {new Date(post.travel_date).toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-4">
+                        <button className="flex-1 bg-green-600/80 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-green-500/50 transform hover:scale-[1.02] transition-all duration-200">
+                          💬 Contact Traveller
+                        </button>
+                        <button className="flex-1 bg-blue-600/80 hover:bg-blue-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg border border-blue-500/50 transform hover:scale-[1.02] transition-all duration-200">
+                          ❤️ Like Post
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
