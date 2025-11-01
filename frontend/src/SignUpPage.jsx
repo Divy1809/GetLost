@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
-  const [step, setStep] = useState(1); // 1: Enter details, 2: Verify OTPs
+  const [step, setStep] = useState(1); // 1: Enter details, 2: Verify Email OTP
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [emailOTP, setEmailOTP] = useState("");
-  const [phoneOTP, setPhoneOTP] = useState("");
   const [userId, setUserId] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -66,14 +65,14 @@ export default function SignUpPage() {
     setErrorMessage("");
     setLoading(true);
 
-    if (!emailOTP || !phoneOTP) {
-      setErrorMessage("Please enter both email and phone OTPs");
+    if (!emailOTP) {
+      setErrorMessage("Please enter email OTP");
       setLoading(false);
       return;
     }
 
-    if (emailOTP.length !== 6 || phoneOTP.length !== 6) {
-      setErrorMessage("OTPs must be 6 digits long");
+    if (emailOTP.length !== 6) {
+      setErrorMessage("OTP must be 6 digits long");
       setLoading(false);
       return;
     }
@@ -82,7 +81,7 @@ export default function SignUpPage() {
       const res = await fetch("http://localhost:5000/api/auth/signup/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, emailOTP, phoneOTP })
+        body: JSON.stringify({ userId, emailOTP })
       });
       
       const data = await res.json();
@@ -152,7 +151,7 @@ export default function SignUpPage() {
       <div className="w-full bg-black/30 backdrop-blur-sm border-b border-slate-700/30 py-8">
         <div className="max-w-7xl mx-auto px-8">
           <h1 className="text-5xl font-bold text-center text-white mb-3">
-            Welcome to <span className="text-slate-300">GetLost</span>
+            Welcome to <span className="text-slate-300">YAATRA</span>
           </h1>
           <p className="text-xl text-center text-slate-400">
             Your smart travel planner
@@ -166,7 +165,7 @@ export default function SignUpPage() {
           <div className="max-w-lg">
             <div className="bg-slate-800/20 backdrop-blur-sm rounded-2xl p-10 border border-slate-700/30">
               <h1 className="text-5xl font-bold text-white mb-6">
-                Join <span className="text-slate-300">GetLost</span>
+                Join <span className="text-slate-300">YAATRA</span>
               </h1>
               <p className="text-xl text-slate-300 mb-8 leading-relaxed">
                 Start your journey with the smartest travel planner. Connect with 
@@ -218,7 +217,7 @@ export default function SignUpPage() {
                       <span className="text-3xl">✅</span>
                     </div>
                     <h3 className="text-2xl font-bold text-white mb-3">Registration Successful!</h3>
-                    <p className="text-slate-300 text-lg mb-6">Welcome to GetLost! Redirecting to sign in...</p>
+                    <p className="text-slate-300 text-lg mb-6">Welcome to YAATRA! Redirecting to sign in...</p>
                     <div className="w-full bg-slate-600/30 rounded-full h-2">
                       <div className="bg-green-500 h-2 rounded-full" style={{width: '100%'}}></div>
                     </div>
@@ -242,8 +241,7 @@ export default function SignUpPage() {
                 {step === 2 && (
                   <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                     <p className="text-blue-300 text-sm">
-                      📧 OTP sent to: {email}<br/>
-                      📱 OTP sent to: {phone}
+                      📧 OTP sent to: {email}
                     </p>
                   </div>
                 )}
@@ -324,20 +322,7 @@ export default function SignUpPage() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Phone OTP *
-                    </label>
-                    <input
-                      type="text"
-                      value={phoneOTP}
-                      onChange={(e) => setPhoneOTP(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/40 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent transition-all text-center text-2xl tracking-widest"
-                      placeholder="000000"
-                      maxLength={6}
-                      required
-                    />
-                  </div>
+
 
                   <div className="flex space-x-4">
                     <button

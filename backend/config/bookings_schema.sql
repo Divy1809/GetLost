@@ -1,4 +1,4 @@
--- Create booking tables for the GetLost travel app
+-- Create booking tables for the YAATRA travel app
 
 -- Flight bookings table
 CREATE TABLE IF NOT EXISTS bookings (

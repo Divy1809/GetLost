@@ -47,10 +47,10 @@ class OTPService {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: `GetLost - Your OTP for ${purpose}`,
+      subject: `YAATRA - Your OTP for ${purpose}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>GetLost - OTP Verification</h2>
+          <h2>YAATRA - OTP Verification</h2>
           <p>Your OTP for ${purpose} is:</p>
           <div style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 20px 0;">
             ${otp}

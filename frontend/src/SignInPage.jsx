@@ -149,7 +149,7 @@ export default function SignInPage() {
       <div className="w-full bg-black/30 backdrop-blur-sm border-b border-slate-700/30 py-8">
         <div className="max-w-7xl mx-auto px-8">
           <h1 className="text-5xl font-bold text-center text-white mb-3">
-            Welcome Back to <span className="text-slate-300">GetLost</span>
+            Welcome Back to <span className="text-slate-300">YAATRA</span>
           </h1>
           <p className="text-xl text-center text-slate-400">
             Your smart travel planner - Plan your journey
@@ -162,7 +162,7 @@ export default function SignInPage() {
         <div className="flex-1 flex items-center justify-center p-12">
           <div className="max-w-lg">
             <div className="bg-slate-800/20 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/30">
-              <h2 className="text-3xl font-bold text-white mb-8">Why Choose GetLost?</h2>
+              <h2 className="text-3xl font-bold text-white mb-8">Why Choose YAATRA?</h2>
               <div className="space-y-6 text-lg text-slate-300">
                 <div className="flex items-start space-x-4">
                   <div className="w-3 h-3 bg-slate-400 rounded-full mt-2 flex-shrink-0"></div>

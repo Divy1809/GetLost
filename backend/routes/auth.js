@@ -36,34 +36,30 @@ router.post('/signup/initiate', async (req, res) => {
       return res.status(400).json({ error: 'Phone number or email already registered.' });
     }
 
-    // Generate OTPs
+    // Generate OTP for email
     const emailOTP = otpService.generateOTP();
-    const phoneOTP = otpService.generateOTP();
     const otpExpiry = otpService.getOTPExpiry();
 
-    // Insert user with OTPs (not verified yet)
+    // Insert user with email OTP (not verified yet)
     const insertQuery = `
-      INSERT INTO users (name, phone, email, email_otp, phone_otp, email_otp_expires_at, phone_otp_expires_at, email_verified, phone_verified, is_verified) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, false, false, false)
+      INSERT INTO users (name, phone, email, email_otp, email_otp_expires_at, email_verified, is_verified) 
+      VALUES (?, ?, ?, ?, ?, false, false)
     `;
     
-    db.query(insertQuery, [name, phone, email, emailOTP, phoneOTP, otpExpiry, otpExpiry], async (err, result) => {
+    db.query(insertQuery, [name, phone, email, emailOTP, otpExpiry], async (err, result) => {
       if (err) {
         console.error('Database insert error:', err);
         return res.status(500).json({ error: 'Failed to initiate signup.' });
       }
       
-      // Send OTPs
+      // Send email OTP
       const emailResult = await otpService.sendEmailOTP(email, emailOTP, 'signup');
-      const phoneResult = await otpService.sendPhoneOTP(phone, phoneOTP, 'signup');
       
       res.status(201).json({ 
         success: true,
-        message: 'OTPs sent! Please verify both email and phone.',
+        message: 'OTP sent to your email!',
         userId: result.insertId,
-        emailSent: emailResult.success,
-        phoneSent: phoneResult.success,
-        note: phoneResult.note || undefined
+        emailSent: emailResult.success
       });
     });
   });
@@ -71,19 +67,17 @@ router.post('/signup/initiate', async (req, res) => {
 
 // POST /api/auth/signup/verify - Verify OTPs and complete signup
 router.post('/signup/verify', (req, res) => {
-  const { userId, emailOTP, phoneOTP } = req.body;
+  const { userId, emailOTP } = req.body;
   
-  if (!userId || !emailOTP || !phoneOTP) {
-    return res.status(400).json({ error: 'User ID, email OTP, and phone OTP are required.' });
+  if (!userId || !emailOTP) {
+    return res.status(400).json({ error: 'User ID and email OTP are required.' });
   }
 
-  // Get user and verify OTPs
+    // Get user and verify email OTP
   const getUserQuery = `
-    SELECT id, name, phone, email, email_otp, phone_otp, email_otp_expires_at, phone_otp_expires_at, email_verified, phone_verified 
+    SELECT id, name, phone, email, email_otp, email_otp_expires_at, email_verified 
     FROM users WHERE id = ?
-  `;
-  
-  db.query(getUserQuery, [userId], (err, results) => {
+  `;  db.query(getUserQuery, [userId], (err, results) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error during verification.' });
@@ -97,22 +91,18 @@ router.post('/signup/verify', (req, res) => {
     
     // Verify email OTP
     const emailValid = otpService.isOTPValid(user.email_otp, emailOTP, user.email_otp_expires_at);
-    // Verify phone OTP
-    const phoneValid = otpService.isOTPValid(user.phone_otp, phoneOTP, user.phone_otp_expires_at);
     
-    if (!emailValid || !phoneValid) {
+    if (!emailValid) {
       return res.status(400).json({ 
-        error: 'Invalid or expired OTP(s).',
-        emailValid,
-        phoneValid
+        error: 'Invalid or expired email OTP.'
       });
     }
     
     // Update user as verified
     const updateQuery = `
       UPDATE users 
-      SET email_verified = true, phone_verified = true, is_verified = true,
-          email_otp = NULL, phone_otp = NULL, email_otp_expires_at = NULL, phone_otp_expires_at = NULL
+      SET email_verified = true, is_verified = true,
+          email_otp = NULL, email_otp_expires_at = NULL
       WHERE id = ?
     `;
     

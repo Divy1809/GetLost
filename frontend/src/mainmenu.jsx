@@ -105,7 +105,7 @@ export default function MainMenu() {
             {/* Main logo with enhanced animations */}
             <div className="relative mb-8">
               <h1 className="text-8xl md:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-white to-slate-200 mb-4 drop-shadow-2xl">
-                GetLost
+                YAATRA
               </h1>
             </div>
             

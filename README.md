@@ -1,4 +1,4 @@
-# GetLost - Smart Travel Planner
+# YAATRA - Smart Travel Planner
 
 A modern travel planning application that helps users connect with travel companions and plan their perfect getaway.
 

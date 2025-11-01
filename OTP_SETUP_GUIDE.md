@@ -77,7 +77,7 @@ EMAIL_PASS=your-app-password
 DB_HOST=localhost
 DB_USER=root  
 DB_PASSWORD=your-db-password
-DB_NAME=getlost
+DB_NAME=yaatra
 PORT=5000
 ```
 
